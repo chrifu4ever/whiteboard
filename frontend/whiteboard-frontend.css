@@ -1,0 +1,107 @@
+@font-face {
+    font-family: 'Montserrat Regular'; 
+    src: url('fonts/Montserrat-Regular.ttf') format('truetype'); 
+}
+
+@font-face {
+    font-family: 'Montserrat Bold';
+    src: url('fonts/Montserrat-Bold.ttf') format('truetype');
+}
+
+h1, h2 {
+    font-family: 'Montserrat Bold', sans-serif;
+    text-align: center;
+    text-decoration: underline;
+}
+html, body {
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+      font-family: 'Montserrat Regular', sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+  }
+  
+  #main-div {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      height: 100%;
+  }
+  
+  #header-div {
+      width: 100%;
+      height: 10vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+  }
+  
+  .logo {
+      width: auto;  
+      box-shadow: 10px 10px 20px gray;
+      margin: 1vh 1vw; 
+     
+  }
+  
+  #canvas-div {
+    flex: 1;
+    background-image: url('img/KonvaBild.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-attachment: fixed;
+}
+  
+  #right-div {
+    width: 15vw;
+    min-height: 0;
+    background-color: #5EA6DF;
+    padding: 1vh 1vw;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    display: none;
+}
+  
+  #birthday-div, #other-div {
+      flex: 1;
+      background-color: #ffffff;
+      margin: 1vh 1vw;  
+      padding: 1vh 1vw; 
+      box-sizing: border-box;
+      min-height: 35vh;
+      box-shadow: 10px 10px 20px gray;
+  }
+
+
+.canvas_pics {
+    position: absolute;
+    cursor: grab;
+    box-shadow: 10px 10px 20px lightgrey;
+}
+
+
+
+.birthday_person {
+    display: flex;
+    align-items: center; 
+}
+
+.birthday_person img {
+    width: 50px; 
+    height: 50px;
+    object-fit: cover;
+    margin-right: 1em; 
+}
+
+.text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
