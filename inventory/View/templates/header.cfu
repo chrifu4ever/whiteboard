@@ -1,0 +1,21 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory</title>
+    <link rel="stylesheet" href="View/css/style.css">
+    <script type="text/javascript" src="Controller/js/jquery-3.3.1.js"></script>
+
+</head>
+<body>
+<div class="header">
+    <h1>Inventory</h1>
+</div>
+<div class='menu col-12'>
+    <button><a href="index.php">Home</a></button>
+    <button><a href="editor.php">Produkt hinzufügen</a></button>
+    <button onclick="callCreateTable('Hallo')">Schrank hinzufügen</button>
+    <button>Zimmer hinzufügen</button>
+
+    <button><a href="addperson.php">Personal hinzufügen</a></button>
+    <button onclick="callCreateTable('Personal')">Personal anzeigen</button>
+</div>

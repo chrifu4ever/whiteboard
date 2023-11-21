@@ -66,7 +66,7 @@ html, body {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    display: none;
+    /*display: none;*/
 }
   
   #birthday-div, #other-div {
