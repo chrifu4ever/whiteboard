@@ -21,8 +21,6 @@ class Database
                       JOIN Cupboard ON Product.cupboardID=Cupboard.cupboardID
                       JOIN Rooms ON Cupboard.roomID=Rooms.roomID
                       WHERE Product.productName LIKE '%$object%' OR Cupboard.cupboardName LIKE '%$object%' OR Rooms.roomName LIKE '%$object%'");
-
-
         }
         else
         {
@@ -83,23 +81,9 @@ class Database
         return $result;
     }
 
-    /*MITARBEITER*/
-    function insertEmployeeInDB($vorname, $nachname, $abteilung, $geburtsdatum, $eintrittsdatum, $austrittsdatum) {
-        return $this->getSQLOrder("INSERT INTO Personal (Vorname, Nachname, Abteilung, Geburtsdatum, Eintrittsdatum, Austrittsdatum) VALUES ('$vorname', '$nachname', '$abteilung', '$geburtsdatum', '$eintrittsdatum', '$austrittsdatum')");
+    function insertEmployeeInDB($vorname, $nachname, $abteilung, $geburtsdatum, $eintrittsdatum, $austrittsdatum = NULL) {
+        $austrittsdatum = $austrittsdatum === NULL ? 'NULL' : "'$austrittsdatum'";
+        return $this->getSQLOrder("INSERT INTO Personal (Vorname, Nachname, Abteilung, Geburtsdatum, Eintrittsdatum, Austrittsdatum) VALUES ('$vorname', '$nachname', '$abteilung', '$geburtsdatum', '$eintrittsdatum', $austrittsdatum)");
     }
-
-    function showEmployee($object)
-    {
-        if ($object != "")
-        {
-            return $this->getSQLOrder("SELECT Vorname, Nachname, Abteilung, Geburtsdatum, Eintrittsdatum, Austrittsdatum FROM Personal
-                          WHERE Vorname LIKE '%$object%' OR Nachname LIKE '%$object%' OR Abteilung LIKE '%$object%'");
-        }
-        else
-        {
-            echo "Bitte geben Sie etwas ins Suchfeld ein";
-        }
-    }
-
 
 }

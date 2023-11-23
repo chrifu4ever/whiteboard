@@ -7,7 +7,7 @@ echo $loader->loadHeader();
 ?>
 <script src="Controller/js/scripts.js"></script>
 <script src="Controller/js/ajax.js"></script>
-<div class="col-3 menu">
+<div class="menu">
         <form method="get">
             <input type="text" name="searchTf" id="searchTf" placeholder="Was suchst du??" onkeypress="callCreateTable(this.value)" autofocus
                    autocomplete="off">

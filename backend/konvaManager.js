@@ -149,17 +149,68 @@ document.getElementById('zipFileInput').addEventListener('change', function () {
 });
 
 
-function saveKonvaAsImage(stage) {
-    console.log('Speichere Konva als Bild.');
-    const dataURL = stage.toDataURL({ pixelRatio: 3 });
-    const link = document.createElement('a');
-    link.href = dataURL;
-    link.download = 'KonvaBild.png';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+// Whiteboard veröffentlichen  TODO Later in extra js file
+document.getElementById('goLiveToFrontend').addEventListener('click', function() {
+    saveToPublicStage(stage);
+});
+
+function saveToPublicStage(stage) {
+    console.log('Saving state.');
+    const zip = new JSZip();
+    const elements = [];
+
+    stage.children.forEach((layer) => {
+        layer.children.forEach((node) => {
+            if (node.className === 'Image') {
+                // Clone the node and reset the rotation
+                const clone = node.clone({ rotation: 0 });
+                const imgDataUrl = clone.toDataURL();
+
+                const imgName = `image_${node._id}.png`;
+                zip.file(imgName, imgDataUrl.split('base64,')[1], {base64: true});
+
+                const width = node.width() * node.scaleX();
+                const height = node.height() * node.scaleY();
+                const x = node.x();
+                const y = node.y();
+                const rotation = node.rotation();
+
+                elements.push({
+                    x, y, width, height, rotation, imgName
+                });
+            }
+        });
+    });
+
+    // Save stage size and elements together
+    const state = {
+        stageSize: {
+            width: stage.width(),
+            height: stage.height()
+        },
+        elements
+    };
+
+    const stateJSON = JSON.stringify(state, null, 2);
+    zip.file('state.json', stateJSON);
+
+    // JavaScript
+    zip.generateAsync({ type: 'blob' })
+    .then(function(blob) {
+        // Create a FormData object
+        var formData = new FormData();
+        formData.append('file', blob, 'public.zip');
+
+        // Send a POST request to the server
+        fetch('saveToFile.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => console.log(data))
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    });
 }
 
-document.getElementById('saveImageButton').addEventListener('click', function() {
-    saveKonvaAsImage(stage);  // Ersetze 'stage' mit deinem tatsächlichen Konva Stage-Objekt
-});

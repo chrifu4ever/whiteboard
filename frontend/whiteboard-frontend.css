@@ -51,11 +51,7 @@ html, body {
   }
   
   #canvas-div {
-    flex: 1;
-    background-image: url('img/KonvaBild.png');
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-attachment: fixed;
+
 }
   
   #right-div {
@@ -66,7 +62,7 @@ html, body {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    /*display: none;*/
+    display: none;
 }
   
   #birthday-div, #other-div {
