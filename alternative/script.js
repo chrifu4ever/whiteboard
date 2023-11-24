@@ -257,3 +257,15 @@ function scalePdf(obj, scaleFactor) {
         });
     });
 }
+
+
+document.getElementById('saveButton').addEventListener('click', function() {
+    const canvasData = document.getElementById('main-canvas').toDataURL();
+    const objectData = JSON.stringify(objects); // 'objects' ist dein Objekt-Array
+
+    // Sende diese Daten an den Server
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'save_canvas.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({ canvas: canvasData, objects: objectData }));
+});
