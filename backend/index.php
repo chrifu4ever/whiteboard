@@ -12,7 +12,7 @@
 <body>
 
 
-<input type="file" id="pdfInput" accept=".pdf, image/jpeg, image/png" style="display: none;" />
+<input type="file" id="pdfInput" accept=".pdf, image/jpeg, image/png, image/svg+xml" style="display: none;" />
 <button onclick="document.getElementById('pdfInput').click()" class="file-upload-button">Bild/PDF einlesen</button>
 <button id="clearButton">Alles löschen</button>
 
@@ -28,9 +28,9 @@
 <select id="screenSizeDropdown">
     <option value="43">43 Zoll</option>
     <option value="50">50 Zoll</option>
-    <option value="55" selected>55 Zoll (Standard)</option>
+    <option value="55" selected>55 Zoll</option>
     <option value="60">60 Zoll</option>
-    <option value="65">65 Zoll</option>
+    <option value="65" selected>65 Zoll (Standard)</option>
     <option value="70">70 Zoll</option>
     <option value="75">75 Zoll</option>
     <option value="80">80 Zoll</option>
@@ -38,7 +38,7 @@
 <select id="resolutionDropdown">
     <option value="hd">HD</option>
     <option value="fhd">Full HD</option>
-    <option value="uhd">4K</option>
+    <option value="uhd" selected>4K</option>
 </select>
 <div id="output"></div>
 

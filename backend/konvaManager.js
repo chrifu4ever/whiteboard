@@ -14,7 +14,7 @@ function addImageToStage(img, stage, x = null, y = null, rotation = null, scaleX
             scale = MAX_HEIGHT / img.height;
         }
     } else {
-        scale = 1;
+        scale = 5;
     }
 
     const layer = new Konva.Layer();

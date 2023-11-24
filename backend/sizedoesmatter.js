@@ -9,10 +9,10 @@ const uhd_height = 2160;
 
 let MAX_HEIGHT_Coefficient = 0.43; //Standard-Koeffizient bei 55 Zoll und Full HD
 
-let screenSize = 55; //Standard- ScreenSize
+let screenSize = 65; //Standard- ScreenSize
 let screenResolution = "fhd"; //Standard - Resolution
 
-let stageWidth = 1920*0.8;
+let stageWidth = 1920;
 let stageHeight = 1080;
 
 
