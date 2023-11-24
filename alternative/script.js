@@ -7,6 +7,9 @@ let resizeDirection;
 let dragStartPoint = {};
 let currentObjectIndex = null;
 
+
+
+// ... Code zum Laden von Bildern und PDFs ...
 document.getElementById('file-input').addEventListener('change', function(e) {
     const file = e.target.files[0];
 
@@ -17,6 +20,7 @@ document.getElementById('file-input').addEventListener('change', function(e) {
     }
 });
 
+// Bild hochladen
 function handleImageUpload(file) {
     const reader = new FileReader();
     
@@ -32,41 +36,24 @@ function handleImageUpload(file) {
     reader.readAsDataURL(file);
 }
 
+// Canvas löschen
+document.getElementById('clearCanvasButton').addEventListener('click', function() {
+    clearCanvas();
+});
+// PDF hochladen
+
+let pdfDocument = null;
+
+
 function handlePdfUpload(file) {
     const reader = new FileReader();
 
     reader.onload = function(e) {
         const typedarray = new Uint8Array(this.result);
 
-        pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
-            // Beschränke die Anzahl der Seiten auf 10 oder die Gesamtzahl der Seiten im PDF
-            const maxPages = Math.min(10, pdf.numPages);
-            let pagesProcessed = 0;
-
-            for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
-                pdf.getPage(pageNum).then(function(page) {
-                    const viewport = page.getViewport({ scale: 1 });
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
-
-                    const renderContext = {
-                        canvasContext: ctx,
-                        viewport: viewport
-                    };
-                    page.render(renderContext).promise.then(function() {
-                        pagesProcessed++;
-                        objects.push({ type: 'pdf', content: canvas, x: 0, y: 100 * (pagesProcessed - 1) });
-                        drawObjects();
-
-                        // Lösche das zusätzliche Canvas, wenn alle Seiten verarbeitet wurden
-                        if (pagesProcessed === maxPages) {
-                            canvas.remove();
-                        }
-                    });
-                });
-            }
+        pdfjsLib.getDocument({ data: typedarray }).promise.then(pdf => {
+            pdfDocument = pdf; // Speichere die PDF-Dokument-Instanz global
+            renderPdfPages(pdf);
         });
     };
 
@@ -75,21 +62,55 @@ function handlePdfUpload(file) {
 
 
 
+function renderPdfPages(pdf) {
+    const maxPages = Math.min(10, pdf.numPages);
+    for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
+        pdf.getPage(pageNum).then(page => {
+            const viewport = page.getViewport({ scale: 1 });
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const ctx = canvas.getContext('2d');
 
+            const renderContext = {
+                canvasContext: ctx,
+                viewport: viewport
+            };
+
+            page.render(renderContext).promise.then(() => {
+                objects.push({
+                    type: 'pdf',
+                    content: canvas,
+                    x: 0,
+                    y: 100 * (pageNum - 1),
+                    pageNum: pageNum
+                });
+                drawObjects();
+            });
+        });
+    }
+}
+
+// ... Code zum Zeichnen von Objekten ...
 function drawObjects() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     objects.forEach((obj, index) => {
+        // Setze Schatten nur für PDF-Objekte
         if (obj.type === 'pdf') {
-            // Schatten für PDF-Objekte
             ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
             ctx.shadowBlur = 10;
             ctx.shadowOffsetX = 5;
             ctx.shadowOffsetY = 5;
         } else {
+            // Kein Schatten für andere Objekte
             ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
         }
 
-        ctx.drawImage(obj.content, obj.x, obj.y);
+        // Zeichne das Objekt
+        ctx.drawImage(obj.content, obj.x, obj.y, obj.content.width, obj.content.height);
 
         // Zeichne eine Umrandung, wenn das Objekt ausgewählt ist
         if (currentObjectIndex === index) {
@@ -98,14 +119,11 @@ function drawObjects() {
             ctx.strokeRect(obj.x, obj.y, obj.content.width, obj.content.height);
         }
     });
-
-    // Schatten zurücksetzen
-    ctx.shadowColor = 'transparent';
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
 }
 
+
+
+// ... Code zum Verschieben von Objekten ...
 canvas.addEventListener('mousedown', function(e) {
     const canvasRect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - canvasRect.left;
@@ -135,7 +153,7 @@ canvas.addEventListener('mousedown', function(e) {
     drawObjects();
 });
 
-
+// ... Code zum Ändern der Größe von Objekten ...
 canvas.addEventListener('mousemove', function(e) {
     if (isDragging) {
         const canvasRect = canvas.getBoundingClientRect();
@@ -147,18 +165,95 @@ canvas.addEventListener('mousemove', function(e) {
     }
 });
 
+
+// ... Code zum Ändern der Größe von Objekten ...
 canvas.addEventListener('mouseup', function() {
     isDragging = false;
+    resizing = false;
 });
 
+// ... Code zum Ändern der Größe von Objekten ...
 canvas.addEventListener('mouseout', function() {
     isDragging = false;
 });
 
 
 
-
+// canvas zurücksetzen
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     objects = [];
+   
+}
+
+
+function isNearEdge(mouseX, mouseY, obj) {
+    const edgeThreshold = 10;
+    const nearRightEdge = mouseX > obj.x + obj.content.width - edgeThreshold && mouseX < obj.x + obj.content.width;
+    const nearBottomEdge = mouseY > obj.y + obj.content.height - edgeThreshold && mouseY < obj.y + obj.content.height;
+
+    return nearRightEdge && nearBottomEdge;
+}
+function getResizeDirection(mouseX, mouseY, obj) {
+    // Da wir nur die rechte untere Ecke betrachten
+    return 'bottom-right';
+}
+
+function resizeObject(mouseX, mouseY, obj, direction) {
+    if (direction === 'bottom-right') {
+        const newWidth = mouseX - obj.x;
+        const newHeight = mouseY - obj.y;
+
+        // Stelle sicher, dass die Größe nicht kleiner als ein Minimum wird
+        obj.content.width = Math.max(newWidth, 20);
+        obj.content.height = Math.max(newHeight, 20);
+    }
+}
+
+
+canvas.addEventListener('wheel', function(e) {
+    if (currentObjectIndex !== null) {
+        const obj = objects[currentObjectIndex];
+        const scaleFactor = e.deltaY < 0 ? 1.1 : 0.9; // Vergrößern/Verkleinern
+
+        if (obj.type === 'image') {
+            // Direkte Skalierung für Bilder
+            obj.content.width *= scaleFactor;
+            obj.content.height *= scaleFactor;
+            drawObjects();
+        } else if (obj.type === 'pdf') {
+            // Skalierung für PDF-Seiten
+            scalePdf(obj, scaleFactor, obj.pageNum);
+        }
+    }
+});
+
+
+function scalePdf(obj, scaleFactor) {
+    if (!pdfDocument) {
+        console.error("PDF-Dokument ist nicht geladen.");
+        return;
+    }
+
+    pdfDocument.getPage(obj.pageNum).then(page => {
+        const currentScale = obj.currentScale || 1;
+        const newScale = currentScale * scaleFactor;
+        obj.currentScale = newScale;
+
+        const viewport = page.getViewport({ scale: newScale });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+
+        const renderContext = {
+            canvasContext: ctx,
+            viewport: viewport
+        };
+
+        page.render(renderContext).promise.then(() => {
+            obj.content = canvas;
+            drawObjects();
+        });
+    });
 }

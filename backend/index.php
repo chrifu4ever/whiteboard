@@ -14,7 +14,7 @@
 
 <input type="file" id="pdfInput" accept=".pdf, image/jpeg, image/png, image/svg+xml" style="display: none;" />
 <button onclick="document.getElementById('pdfInput').click()" class="file-upload-button">Bild/PDF einlesen</button>
-<button id="clearButton">Alles löschen</button>
+<button id="clear-canvas">Alles löschen</button>
 
 <button id="goLiveToFrontend">Whiteboard veröffentlichen</button>
 
