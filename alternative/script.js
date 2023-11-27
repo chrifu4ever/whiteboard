@@ -18,6 +18,18 @@ document.getElementById('file-input').addEventListener('change', function(e) {
     } else if (file.type === 'application/pdf') {
         handlePdfUpload(file);
     }
+
+    // Datei hochladen
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('file_upload.php', { 
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => console.log(data.message))
+    .catch(error => console.error('Error:', error));
 });
 
 // Bild hochladen
@@ -261,11 +273,23 @@ function scalePdf(obj, scaleFactor) {
 
 document.getElementById('saveButton').addEventListener('click', function() {
     const canvasData = document.getElementById('main-canvas').toDataURL();
-    const objectData = JSON.stringify(objects); // 'objects' ist dein Objekt-Array
+
+    // Sammle die Objektdaten
+    let objectData = objects.map(obj => {
+        return {
+            type: obj.type,
+            x: obj.x,
+            y: obj.y,
+            content: obj.type === 'image' ? obj.content.src : obj.pdfData, // URL oder Base64 für Bilder, PDF-Daten für PDFs
+            pageNum: obj.pageNum || null
+        };
+    });
 
     // Sende diese Daten an den Server
     const xhr = new XMLHttpRequest();
     xhr.open('POST', 'save_canvas.php', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify({ canvas: canvasData, objects: objectData }));
+
+  
 });

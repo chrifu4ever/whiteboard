@@ -2,14 +2,18 @@
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
 
-    $canvasData = $data['canvas']; // Base64 codiertes Canvas-Bild
-    $objectsData = json_decode($data['objects'], true); // Array von Objektdaten
+    $canvasData = $data['canvas'];
+    $objectsData = $data['objects'];
 
     // Pfade definieren
     $savePath = '../files/';
     $zipPath = $savePath . 'alternative.zip';
 
-    // Erstelle und öffne ein neues ZIP-Archiv
+    // Stelle sicher, dass der Speicherpfad existiert
+    if (!file_exists($savePath)) {
+        mkdir($savePath, 0777, true);
+    }
+
     $zip = new ZipArchive();
     if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
         // Canvas-Bild speichern
@@ -18,23 +22,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         file_put_contents($canvasImagePath, $canvasData);
         $zip->addFile($canvasImagePath, 'canvas.png');
 
-        // Durchlaufe die Objekte und füge sie zum ZIP hinzu
+        // Verarbeite die Objekte
         foreach ($objectsData as $index => $object) {
-            if ($object['type'] === 'image' || $object['type'] === 'pdf') {
-                // Für dieses Beispiel wird angenommen, dass die Objekte Dateipfade enthalten
-                // In der Praxis müsstest du die tatsächlichen Dateien aus den Daten extrahieren
-                $filePath = $savePath . basename($object['content']);
-                $zip->addFile($filePath, basename($object['content']));
-            }
+            // Logik zum Speichern und Hinzufügen der Objekte zum ZIP
+            // ...
         }
 
         // Schließe das ZIP-Archiv
         $zip->close();
-
-        // Rückgabe einer Erfolgsmeldung
-        echo json_encode(['status' => 'success']);
+        echo json_encode(['status' => 'success', 'message' => 'ZIP file created.']);
     } else {
-        // Rückgabe einer Fehlermeldung
         echo json_encode(['status' => 'error', 'message' => 'Cannot create ZIP file.']);
     }
 } else {
