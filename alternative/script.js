@@ -271,25 +271,36 @@ function scalePdf(obj, scaleFactor) {
 }
 
 
-document.getElementById('saveButton').addEventListener('click', function() {
-    const canvasData = document.getElementById('main-canvas').toDataURL();
 
-    // Sammle die Objektdaten
-    let objectData = objects.map(obj => {
-        return {
-            type: obj.type,
-            x: obj.x,
-            y: obj.y,
-            content: obj.type === 'image' ? obj.content.src : obj.pdfData, // URL oder Base64 für Bilder, PDF-Daten für PDFs
-            pageNum: obj.pageNum || null
-        };
+function saveCanvasAsImage() {
+    const canvas4k = document.createElement('canvas');
+    canvas4k.width = 3840; // 4K Breite
+    canvas4k.height = 2160; // 4K Höhe
+    const ctx = canvas4k.getContext('2d');
+
+    const scaleFactor = 3840 / document.getElementById('main-canvas').width;
+
+    const renderPromises = objects.map(obj => {
+        if (obj.type === 'pdf') {
+            // Verwende scalePdf, um das PDF auf dem neuen Canvas zu skalieren und zu rendern
+            return scalePdf(obj, scaleFactor, ctx);
+        } else {
+            // Skalieren und zeichnen für Bilder
+            const scaledX = obj.x * scaleFactor;
+            const scaledY = obj.y * scaleFactor;
+            const scaledWidth = obj.content.width * scaleFactor;
+            const scaledHeight = obj.content.height * scaleFactor;
+            ctx.drawImage(obj.content, scaledX, scaledY, scaledWidth, scaledHeight);
+            return Promise.resolve();
+        }
     });
 
-    // Sende diese Daten an den Server
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'save_canvas.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify({ canvas: canvasData, objects: objectData }));
+    Promise.all(renderPromises).then(() => {
+        // Nachdem alle Objekte gerendert wurden, verarbeite das Canvas-Bild
+        const imageData = canvas4k.toDataURL('image/jpeg');
+        sendCanvasToServer(imageData);
+    });
+}
 
-  
-});
+// Füge einen Event-Listener zum Save-Button hinzu
+document.getElementById('saveButton').addEventListener('click', saveCanvasAsImage);

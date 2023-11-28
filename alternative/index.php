@@ -8,11 +8,7 @@
 </head>
 
 <body>
-    <?php
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
-    ?>
+
     <div id="menu-container">
         <input type="file" id="file-input" accept="image/*,application/pdf">
         <button id="clearCanvasButton">Clear Canvas</button>

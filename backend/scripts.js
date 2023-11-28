@@ -52,7 +52,7 @@ document.getElementById('pdfInput').addEventListener('change', function(event) {
         reader.readAsDataURL(file);
     }
 });  
-document.getElementById('clearButton').addEventListener('click', function() {
+document.getElementById('clearCanvasButton').addEventListener('click', function() {
     const decision = window.confirm("Sollen wirklich alle Elemente gelöscht werden?");
     if (decision) {
         clearCanvas();  // Angenommen, clearCanvas ist definiert oder importiert
