@@ -358,10 +358,14 @@ document.getElementById('saveButton').addEventListener('click', saveCanvasAsImag
 
 
 document.getElementById('goLiveWhiteboardButton').addEventListener('click', function() {
-    const userConfirmation = confirm("Möchtest du das aktuelle Whiteboard veröffentlichen? Dadurch wird das bisherige Whiteboard überschrieben und dieses angezeigt.");
+    if (objects.length > 0) {
+        const userConfirmation = confirm("Möchtest du das aktuelle Whiteboard veröffentlichen? Dadurch wird das bisherige Whiteboard überschrieben und dieses angezeigt.");
 
-    if (userConfirmation) {
-        copyFilesToSaved();
+        if (userConfirmation) {
+            copyFilesToSaved();
+        }
+    } else {
+        alert("Es gibt keine Objekte auf dem Whiteboard, die veröffentlicht werden können.");
     }
 });
 
@@ -369,6 +373,37 @@ function copyFilesToSaved() {
     fetch('../php/copyFiles.php', { method: 'POST' })
     .then(response => response.json())
     .then(data => console.log(data.message))
+    .catch(error => console.error('Error:', error));
+}
+
+
+
+canvas.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+
+    if (currentObjectIndex !== null) {
+        // Entferne das Objekt vom Canvas
+        objects.splice(currentObjectIndex, 1);
+
+        // Sende Anfrage zum Entfernen des Objekts aus der JSON-Datei
+        removeFromJson(currentObjectIndex);
+
+        // Setze die Markierung zurück und zeichne das Canvas neu
+        currentObjectIndex = null;
+        drawObjects();
+    }
+});
+
+function removeFromJson(index) {
+    fetch('/php/removeFromJson.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ index: index })
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
     .catch(error => console.error('Error:', error));
 }
 
