@@ -109,8 +109,8 @@ function handlePdfUpload(file, filepath) {
 
 
 
-function renderPdfPages(pdf, filepath) {
-    const maxPages = Math.min(10, pdf.numPages);
+function renderPdfPages(pdf, filepath, item = null) {
+    const maxPages = Math.min(10, pdf.numPages); // oder eine andere Logik, um die Seitenanzahl zu begrenzen
     for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
         pdf.getPage(pageNum).then(page => {
             const viewport = page.getViewport({ scale: 1 });
@@ -125,21 +125,21 @@ function renderPdfPages(pdf, filepath) {
             };
 
             page.render(renderContext).promise.then(() => {
-                objects.push({
+                const obj = {
                     type: 'pdf',
                     content: canvas,
-                    x: 0,
-                    y: 100 * (pageNum - 1),
+                    x: item ? item.x : 0, // Verwende x-Wert aus 'item', wenn vorhanden, sonst 0
+                    y: item ? item.y + 100 * (pageNum - 1) : 100 * (pageNum - 1), // Ähnlich für y-Wert
                     pageNum: pageNum,
-                    width: canvas.width, 
-                    height: canvas.height, 
                     filepath: filepath
-                });
+                };
+                objects.push(obj);
                 drawObjects();
             });
         });
     }
 }
+
 
 // ... Code zum Zeichnen von Objekten ...
 function drawObjects(filepath) {
@@ -371,7 +371,7 @@ function scalePdf(obj, scaleFactor) {
 document.getElementById('saveButton').addEventListener('click', saveCanvasAsImage); */
 
 
-
+// Whiteboard veröffentlichen und speichern im saved-Ordner
 document.getElementById('goLiveWhiteboardButton').addEventListener('click', function() {
     if (objects.length > 0) {
         const userConfirmation = confirm("Möchtest du das aktuelle Whiteboard veröffentlichen? Dadurch wird das bisherige Whiteboard überschrieben und dieses angezeigt.");
@@ -392,7 +392,7 @@ function copyFilesToSaved() {
 }
 
 
-
+//Einzelne Elemente löschen vom Canvas, aus der JSON und aus dem Ordner wenn keine Elemente mehr vorhanden sind
 canvas.addEventListener('contextmenu', function(e) {
     e.preventDefault();
 
@@ -420,5 +420,58 @@ function removeFromJson(index) {
     .then(response => response.json())
     .then(data => console.log(data))
     .catch(error => console.error('Error:', error));
+}
+
+
+
+//lädt das aktuelle canvas wenn dateien im ordner sind
+window.onload = function() {
+    // Lade die JSON-Daten beim Start
+    fetch('/php/loadJson.php')
+    .then(response => response.json())
+    .then(data => {
+        // Verarbeite jede Datei aus der JSON-Daten
+        data.forEach(item => {
+            if (item.type === 'image') {
+                // Lade Bild und füge es zum Canvas hinzu
+                loadAndAddImage(item);
+            } else if (item.type === 'pdf') {
+                // Lade PDF und füge es zum Canvas hinzu
+                loadAndAddPdf(item);
+            }
+        });
+    })
+    .catch(error => console.error('Error:', error));
+};
+
+function loadAndAddImage(item) {
+    const img = new Image();
+    img.onload = function() {
+        objects.push({
+            type: 'image',
+            content: img,
+            x: item.x, // Setze die x-Position aus dem JSON-Objekt
+            y: item.y, // Setze die y-Position aus dem JSON-Objekt
+            width: item.width, // Setze die Breite aus dem JSON-Objekt
+            height: item.height, // Setze die Höhe aus dem JSON-Objekt
+            filepath: item.filepath
+        });
+        drawObjects();
+    };
+    img.src = item.filepath; // Setze den Pfad zur Bilddatei
+}
+
+function loadAndAddPdf(item) {
+    // Lade die PDF-Datei von ihrem Pfad
+    fetch(item.filepath)
+    .then(response => response.arrayBuffer())
+    .then(buffer => {
+        const typedarray = new Uint8Array(buffer);
+
+        pdfjsLib.getDocument({ data: typedarray }).promise.then(pdf => {
+            renderPdfPages(pdf, item.filepath, item);
+        });
+    })
+    .catch(error => console.error('Error beim Laden der PDF:', error));
 }
 
