@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sidler Transport Whiteboard</title>
-    <link rel="stylesheet" href="whiteboard-frontend.css">
+    <link rel="stylesheet" href="../css/frontend.css">
     <script src="https://unpkg.com/konva@7.2.5/konva.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>

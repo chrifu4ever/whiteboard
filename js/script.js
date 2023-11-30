@@ -10,27 +10,45 @@ let currentObjectIndex = null;
 
 
 // ... Code zum Laden von Bildern und PDFs ...
-document.getElementById('file-input').addEventListener('change', function(e) {
+document.getElementById('fileInputButton').addEventListener('change', function(e) {
     const file = e.target.files[0];
-
-    if (file.type.match('image.*')) {
-        handleImageUpload(file);
-    } else if (file.type === 'application/pdf') {
-        handlePdfUpload(file);
-    }
-
-    // Datei hochladen
     const formData = new FormData();
     formData.append('file', file);
 
-    fetch('file_upload.php', { 
+    fetch('../php/fileUpload.php', { 
         method: 'POST',
         body: formData
     })
     .then(response => response.json())
-    .then(data => console.log(data.message))
+    .then(data => {
+        // Senden der Dateiinformationen an saveToJson.php
+        const fileInfo = {
+            filetype: file.type.includes('image') ? 'image' : 'pdf',
+            filepath: data.filePath
+        };
+        saveFileInfo(fileInfo);
+
+        if (file.type.match('image.*')) {
+            handleImageUpload(file, data.filePath);
+        } else if (file.type === 'application/pdf') {
+            handlePdfUpload(file, data.filePath);
+        }
+    })
     .catch(error => console.error('Error:', error));
 });
+
+function saveFileInfo(fileInfo) {
+    fetch('../php/saveToJson.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(fileInfo)
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+}
 
 // Bild hochladen
 function handleImageUpload(file) {
