@@ -64,8 +64,29 @@ function handleImageUpload(file, filepath) {
 
 // Canvas löschen
 document.getElementById('clearCanvasButton').addEventListener('click', function() {
-    clearCanvas();
+    const userConfirmation = confirm("Möchtest du wirklich alle Elemente vom Canvas löschen?");
+
+    if (userConfirmation) {
+        clearCanvas();
+        clearFilesDirectory();
+    }
 });
+
+
+function clearCanvas() {
+    // Lösche alle Objekte auf dem Canvas
+    objects = [];
+    drawObjects(); // Zeichne das Canvas neu, um die Änderungen anzuzeigen
+}
+
+function clearFilesDirectory() {
+    // Sende Anfrage an PHP-Server, um Dateien im ../files/ Ordner zu löschen
+    fetch('/php/clearFilesDirectory.php', { method: 'POST' })
+    .then(response => response.json())
+    .then(data => console.log(data.message))
+    .catch(error => console.error('Error:', error));
+}
+
 // PDF hochladen
 
 let pdfDocument = null;
@@ -237,12 +258,6 @@ canvas.addEventListener('mouseout', function() {
 
 
 
-// canvas zurücksetzen
-function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    objects = [];
-   
-}
 
 
 function isNearEdge(mouseX, mouseY, obj) {
