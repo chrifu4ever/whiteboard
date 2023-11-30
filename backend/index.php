@@ -13,6 +13,7 @@
         <input type="file" id="fileInputButton" accept="image/*,application/pdf">
         <button id="clearCanvasButton">Clear Canvas</button>
        <!--  <button id="saveButton">Canvas Speichern</button> -->
+       <button id="goLiveWhiteboardButton">Whiteboard veröffentlichen</button>
 
     </div>
     <div id="canvas-container">

@@ -354,3 +354,21 @@ function scalePdf(obj, scaleFactor) {
 
 // Füge einen Event-Listener zum Save-Button hinzu
 document.getElementById('saveButton').addEventListener('click', saveCanvasAsImage); */
+
+
+
+document.getElementById('goLiveWhiteboardButton').addEventListener('click', function() {
+    const userConfirmation = confirm("Möchtest du das aktuelle Whiteboard veröffentlichen? Dadurch wird das bisherige Whiteboard überschrieben und dieses angezeigt.");
+
+    if (userConfirmation) {
+        copyFilesToSaved();
+    }
+});
+
+function copyFilesToSaved() {
+    fetch('../php/copyFiles.php', { method: 'POST' })
+    .then(response => response.json())
+    .then(data => console.log(data.message))
+    .catch(error => console.error('Error:', error));
+}
+
