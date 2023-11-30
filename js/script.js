@@ -45,8 +45,16 @@ function handleImageUpload(file, filepath) {
     reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
-            objects.push({ type: 'image', content: img, x: 0, y: 0, filepath: filepath });
-            drawObjects(filepath);
+            objects.push({
+                type: 'image', 
+                content: img, 
+                x: 0, 
+                y: 0, 
+                width: img.width, 
+                height: img.height, 
+                filepath: filepath
+            });
+            drawObjects();
         };
         img.src = e.target.result;
     };
@@ -102,9 +110,11 @@ function renderPdfPages(pdf, filepath) {
                     x: 0,
                     y: 100 * (pageNum - 1),
                     pageNum: pageNum,
+                    width: canvas.width, 
+                    height: canvas.height, 
                     filepath: filepath
                 });
-                drawObjects(filepath);
+                drawObjects();
             });
         });
     }
@@ -148,8 +158,10 @@ function updateJsonForObject(obj, index) {
         filepath: obj.filepath,
         x: obj.x,
         y: obj.y,
+        width: obj.width, 
+        height: obj.height, 
         page: obj.type === 'pdf' ? obj.pageNum : undefined,
-        index: index // Füge den Index hinzu
+        index: index 
     };
     updateJsonFile(fileInfo);
 }
@@ -266,7 +278,9 @@ canvas.addEventListener('wheel', function(e) {
             // Direkte Skalierung für Bilder
             obj.content.width *= scaleFactor;
             obj.content.height *= scaleFactor;
-            drawObjects(obj.filepath);
+            obj.width = obj.content.width; // Aktualisiere die Breite
+            obj.height = obj.content.height; // Aktualisiere die Höhe
+            drawObjects();
         } else if (obj.type === 'pdf') {
             // Skalierung für PDF-Seiten
             scalePdf(obj, scaleFactor, obj.pageNum);
@@ -299,7 +313,9 @@ function scalePdf(obj, scaleFactor) {
 
         page.render(renderContext).promise.then(() => {
             obj.content = canvas;
-            drawObjects(obj.filepath);
+            obj.width = viewport.width; // Aktualisiere die Breite
+            obj.height = viewport.height; // Aktualisiere die Höhe
+            drawObjects(); // Zeichne die Objekte neu, um das JSON zu aktualisieren
         });
     });
 }
