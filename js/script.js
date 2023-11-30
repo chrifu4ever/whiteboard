@@ -26,7 +26,7 @@ document.getElementById('fileInputButton').addEventListener('change', function(e
             filetype: file.type.includes('image') ? 'image' : 'pdf',
             filepath: data.filePath
         };
-        saveFileInfo(fileInfo);
+       
 
         if (file.type.match('image.*')) {
             handleImageUpload(file, data.filePath);
@@ -37,28 +37,16 @@ document.getElementById('fileInputButton').addEventListener('change', function(e
     .catch(error => console.error('Error:', error));
 });
 
-function saveFileInfo(fileInfo) {
-    fetch('../php/saveToJson.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(fileInfo)
-    })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error('Error:', error));
-}
 
 // Bild hochladen
-function handleImageUpload(file) {
+function handleImageUpload(file, filepath) {
     const reader = new FileReader();
     
     reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
-            objects.push({ type: 'image', content: img, x: 0, y: 0 });
-            drawObjects();
+            objects.push({ type: 'image', content: img, x: 0, y: 0, filepath: filepath });
+            drawObjects(filepath);
         };
         img.src = e.target.result;
     };
@@ -75,7 +63,7 @@ document.getElementById('clearCanvasButton').addEventListener('click', function(
 let pdfDocument = null;
 
 
-function handlePdfUpload(file) {
+function handlePdfUpload(file, filepath) {
     const reader = new FileReader();
 
     reader.onload = function(e) {
@@ -83,7 +71,7 @@ function handlePdfUpload(file) {
 
         pdfjsLib.getDocument({ data: typedarray }).promise.then(pdf => {
             pdfDocument = pdf; // Speichere die PDF-Dokument-Instanz global
-            renderPdfPages(pdf);
+            renderPdfPages(pdf, filepath);
         });
     };
 
@@ -92,7 +80,7 @@ function handlePdfUpload(file) {
 
 
 
-function renderPdfPages(pdf) {
+function renderPdfPages(pdf, filepath) {
     const maxPages = Math.min(10, pdf.numPages);
     for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
         pdf.getPage(pageNum).then(page => {
@@ -113,16 +101,18 @@ function renderPdfPages(pdf) {
                     content: canvas,
                     x: 0,
                     y: 100 * (pageNum - 1),
-                    pageNum: pageNum
+                    pageNum: pageNum,
+                    filepath: filepath
                 });
-                drawObjects();
+                drawObjects(filepath);
             });
         });
     }
 }
 
 // ... Code zum Zeichnen von Objekten ...
-function drawObjects() {
+function drawObjects(filepath) {
+    console.log("Gezeichnet");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     objects.forEach((obj, index) => {
         // Setze Schatten nur für PDF-Objekte
@@ -148,7 +138,33 @@ function drawObjects() {
             ctx.lineWidth = 2;
             ctx.strokeRect(obj.x, obj.y, obj.content.width, obj.content.height);
         }
+        updateJsonForObject(obj, index, filepath);
     });
+}
+
+function updateJsonForObject(obj, index) {
+    const fileInfo = {
+        type: obj.type,
+        filepath: obj.filepath,
+        x: obj.x,
+        y: obj.y,
+        page: obj.type === 'pdf' ? obj.pageNum : undefined,
+        index: index // Füge den Index hinzu
+    };
+    updateJsonFile(fileInfo);
+}
+
+function updateJsonFile(fileInfo) {
+    fetch('/php/saveToJson.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(fileInfo)
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
 }
 
 
@@ -250,7 +266,7 @@ canvas.addEventListener('wheel', function(e) {
             // Direkte Skalierung für Bilder
             obj.content.width *= scaleFactor;
             obj.content.height *= scaleFactor;
-            drawObjects();
+            drawObjects(obj.filepath);
         } else if (obj.type === 'pdf') {
             // Skalierung für PDF-Seiten
             scalePdf(obj, scaleFactor, obj.pageNum);
@@ -283,14 +299,14 @@ function scalePdf(obj, scaleFactor) {
 
         page.render(renderContext).promise.then(() => {
             obj.content = canvas;
-            drawObjects();
+            drawObjects(obj.filepath);
         });
     });
 }
 
 
 
-function saveCanvasAsImage() {
+/* function saveCanvasAsImage() {
     const canvas4k = document.createElement('canvas');
     canvas4k.width = 3840; // 4K Breite
     canvas4k.height = 2160; // 4K Höhe
@@ -321,4 +337,4 @@ function saveCanvasAsImage() {
 }
 
 // Füge einen Event-Listener zum Save-Button hinzu
-document.getElementById('saveButton').addEventListener('click', saveCanvasAsImage);
+document.getElementById('saveButton').addEventListener('click', saveCanvasAsImage); */
