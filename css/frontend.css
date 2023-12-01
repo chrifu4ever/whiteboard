@@ -1,11 +1,11 @@
 @font-face {
   font-family: "Montserrat Regular";
-  src: url("fonts/Montserrat-Regular.ttf") format("truetype");
+  src: url("../frontend/fonts/Montserrat-Regular.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "Montserrat Bold";
-  src: url("fonts/Montserrat-Bold.ttf") format("truetype");
+  src: url("../frontend/fonts/Montserrat-Bold.ttf") format("truetype");
 }
 
 h1,
@@ -50,15 +50,15 @@ body {
   margin: 1vh 1vw;
 }
 
-#canvas-div {
-   width: 3840px;
-   height: 2160px;
+#main-canvas {
+  border: 1px solid black;
+  
 }
 
 
 
 #right-div {
-  width: 25vw;
+  width: 20vw;
   min-height: 0;
   background-color: #5ea6df;
   padding: 1vh 1vw;

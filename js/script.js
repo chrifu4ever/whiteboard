@@ -113,7 +113,7 @@ function renderPdfPages(pdf, filepath, item = null) {
     const maxPages = Math.min(10, pdf.numPages); // oder eine andere Logik, um die Seitenanzahl zu begrenzen
     for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
         pdf.getPage(pageNum).then(page => {
-            const viewport = page.getViewport({ scale: 1 });
+            const viewport = page.getViewport({ scale: 2 });
             const canvas = document.createElement('canvas');
             canvas.width = viewport.width;
             canvas.height = viewport.height;
