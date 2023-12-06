@@ -257,7 +257,50 @@ canvas.addEventListener('mouseout', function() {
 });
 
 
+//TOUCH EVENTS
+canvas.addEventListener('touchstart', function(e) {
+    const canvasRect = canvas.getBoundingClientRect();
+    const touchX = e.touches[0].clientX - canvasRect.left;
+    const touchY = e.touches[0].clientY - canvasRect.top;
+    let found = false;
 
+    objects.slice().reverse().forEach((obj, index) => {
+        if (!found && touchX > obj.x && touchX < obj.x + obj.content.width && touchY > obj.y && touchY < obj.y + obj.content.height) {
+            isDragging = true;
+            dragStartPoint.x = touchX - obj.x;
+            dragStartPoint.y = touchY - obj.y;
+            currentObjectIndex = objects.length - 1 - index;
+
+            const selectedObject = objects.splice(currentObjectIndex, 1)[0];
+            objects.push(selectedObject);
+            currentObjectIndex = objects.length - 1;
+
+            found = true;
+        }
+    });
+
+    if (!found) {
+        currentObjectIndex = null;
+    }
+
+    drawObjects();
+});
+
+canvas.addEventListener('touchmove', function(e) {
+    if (isDragging) {
+        const canvasRect = canvas.getBoundingClientRect();
+        const touchX = e.touches[0].clientX - canvasRect.left;
+        const touchY = e.touches[0].clientY - canvasRect.top;
+        objects[currentObjectIndex].x = touchX - dragStartPoint.x;
+        objects[currentObjectIndex].y = touchY - dragStartPoint.y;
+        drawObjects();
+    }
+});
+
+canvas.addEventListener('touchend', function() {
+    isDragging = false;
+    resizing = false;
+});
 
 
 function isNearEdge(mouseX, mouseY, obj) {

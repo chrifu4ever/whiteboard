@@ -1,16 +1,16 @@
 #menu-container {
-    text-align: center;
-    padding: 20px;
-    background-color: #f8f8f8;
-    border-bottom: 1px solid #e7e7e7;
+  text-align: center;
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #e7e7e7;
 }
 
 #canvas-container {
-    display: flex;
-    justify-content: center;
-    padding: 20px;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
 }
 
 #main-canvas {
-    border: 1px solid black;
+  border: 1px solid black;
 }

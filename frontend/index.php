@@ -12,10 +12,6 @@
 <body>
 
     <div id="main-div">
-
-        
-
-
         <div id="canvas-container">
             <canvas id="main-canvas" width="1920" height="1080"></canvas>
         </div>
