@@ -83,26 +83,6 @@ class ConnectDB
         return $entry;
     }
 
-    public function updateEntry($id, $vorname, $nachname, $abteilung, $geburtsdatum, $eintrittsdatum, $austrittsdatum) {
-        $conn = $this->connect();
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        // SQL-Injection-Schutz
-        $id = $conn->real_escape_string($id);
-        $vorname = $conn->real_escape_string($vorname);
-        $nachname = $conn->real_escape_string($nachname);
-        // ... Gleicher Vorgang für die anderen Variablen ...
-
-        $query = "UPDATE Personal SET Vorname = '$vorname', Nachname = '$nachname', Abteilung = '$abteilung', Geburtsdatum = '$geburtsdatum', Eintrittsdatum = '$eintrittsdatum', Austrittsdatum = '$austrittsdatum' WHERE PersID = '$id'";
-
-        $result = $conn->query($query);
-        
-        $conn->close();
-        return $result;
-    }
-
 
 }
 

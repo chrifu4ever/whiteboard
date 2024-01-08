@@ -21,40 +21,40 @@ echo "<input type='text' name='searchTerm' placeholder='Vorname oder Nachname'>"
 echo "<input type='submit' name='search' value='Suchen'>";
 echo "</form>";
 
-// Verarbeitung der Suchanfrage
-if (isset($_POST['search'])) {
-    $db = new ConnectDB();
-    $searchTerm = $_POST['searchTerm'];
-    $entries = $db->searchEntries($searchTerm);
+    // Verarbeitung der Suchanfrage
+    if (isset($_POST['search'])) {
+        $db = new ConnectDB();
+        $searchTerm = $_POST['searchTerm'];
+        $entries = $db->searchEntries($searchTerm);
 
-    // Anzeigen der Ergebnisse, falls vorhanden
-    if ($entries) {
-        echo "<table border='1'>";
-        echo "<tr><th>PersID</th><th>Vorname</th><th>Nachname</th><th>Abteilung</th><th>Geburtsdatum</th><th>Eintrittsdatum</th><th>Austrittsdatum</th><th>Bearbeiten</th><th>Löschen</th></tr>";
-    
-        foreach ($entries as $entry) {
-            echo "<tr>";
-            echo "<td>" . htmlspecialchars($entry['PersID']) . "</td>";
-            echo "<td>" . htmlspecialchars($entry['Vorname']) . "</td>";
-            echo "<td>" . htmlspecialchars($entry['Nachname']) . "</td>";
-            echo "<td>" . htmlspecialchars($entry['Abteilung']) . "</td>";
-            echo "<td>" . htmlspecialchars($entry['Geburtsdatum']) . "</td>";
-            echo "<td>" . htmlspecialchars($entry['Eintrittsdatum']) . "</td>";
-            echo "<td>" . htmlspecialchars($entry['austrittsdatum']) . "</td>";
-            // Hinzufügen der Bearbeiten- und Löschen-Symbole
-            echo "<td class='action'><i class='fa-solid fa-pen edit-icon' data-persid='" . $entry['PersID'] . "'></i></td>";
+        // Anzeigen der Ergebnisse, falls vorhanden
+        if ($entries) {
+            echo "<table border='1'>";
+            echo "<tr><th>PersID</th><th>Vorname</th><th>Nachname</th><th>Abteilung</th><th>Geburtsdatum</th><th>Eintrittsdatum</th><th>Austrittsdatum</th><th>Bearbeiten</th><th>Löschen</th></tr>";
+        
+            foreach ($entries as $entry) {
+                echo "<tr>";
+                echo "<td>" . htmlspecialchars($entry['PersID']) . "</td>";
+                echo "<td>" . htmlspecialchars($entry['Vorname']) . "</td>";
+                echo "<td>" . htmlspecialchars($entry['Nachname']) . "</td>";
+                echo "<td>" . htmlspecialchars($entry['Abteilung']) . "</td>";
+                echo "<td>" . htmlspecialchars($entry['Geburtsdatum']) . "</td>";
+                echo "<td>" . htmlspecialchars($entry['Eintrittsdatum']) . "</td>";
+                echo "<td>" . htmlspecialchars($entry['austrittsdatum']) . "</td>";
+                // Hinzufügen der Bearbeiten- und Löschen-Symbole
+                echo "<td class='action'><i class='fa-solid fa-pen edit-icon' data-persid='" . $entry['PersID'] . "'></i></td>";
 
-            echo "<td><i class='fa-solid fa-trash'></i></td>";
-            echo "</tr>";
+                echo "<td><i class='fa-solid fa-trash'></i></td>";
+                echo "</tr>";
+            }
+        
+            echo "</table>";
+        } else {
+            echo "Keine Einträge gefunden.";
         }
-    
-        echo "</table>";
-    } else {
-        echo "Keine Einträge gefunden.";
     }
-}
 
-
+    
 if (isset($_GET['edit'])) {
     $persIdToEdit = $_GET['edit'];
     
@@ -107,27 +107,27 @@ if (isset($_POST['id']) && isset($_POST['data'])) {
     }
 }
 
+// Prüfen, ob es sich um eine AJAX-Anfrage handelt
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update') {
-    
+    $db = new ConnectDB();
 
-    // Extrahiere die Daten aus $_POST['data']
-    $vorname = $_POST['Vorname'];
-    $nachname = $_POST['Nachname'];
-    $abteilung = $_POST['Abteilung'];
-    $geburtsdatum = $_POST['Geburtsdatum'];
-    $eintrittsdatum = $_POST['Eintrittsdatum'];
-    $austrittsdatum = $_POST['Austrittsdatum'];
+    $id = $_POST['id'];
+    $data = $_POST['data'];
 
-    // Rufe updateEntry auf
-    $result = $db->updateEntry($_POST['id'], $vorname, $nachname, $abteilung, $geburtsdatum, $eintrittsdatum, $austrittsdatum);
+    // Hier sicherstellen, dass alle erforderlichen Daten vorhanden sind
+    if (isset($data['column1'], $data['column2'], $data['column3'], $data['column4'], $data['column5'], $data['column6'])) {
+        $result = $db->updateEntry($id, $data['column1'], $data['column2'], $data['column3'], $data['column4'], $data['column5'], $data['column6']);
 
-    if ($result) {
-        echo "Update erfolgreich";
+        if ($result) {
+            echo "Update erfolgreich";
+        } else {
+            echo "Update fehlgeschlagen";
+        }
     } else {
-        echo "Update fehlgeschlagen";
+        echo "Nicht alle erforderlichen Daten wurden übergeben";
     }
 
-    exit; // Wichtig, um zu verhindern, dass der Rest der Seite geladen wird
+    exit; // Verhindert, dass der restliche HTML-Code ausgeführt wird
 }
 
 ?>
@@ -136,49 +136,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 $(document).ready(function() {
     $(".edit-icon").click(function() {
         var row = $(this).closest("tr");
-        row.find("td").each(function(index, td) {
-            if (!$(td).hasClass("action")) { // Überspringe die Spalte mit den Aktionssymbolen
-                var text = $(td).text();
-                $(td).html("<input type='text' value='" + text + "'>");
+        row.find("td").not(".action").each(function() {
+            var text = $(this).text();
+            $(this).html("<input type='text' value='" + text + "' />");
+        });
+
+        $(this).removeClass("fa-pen edit-icon").addClass("fa-check update-icon");
+
+    $(".update-icon").click(function() {
+            var updatedRow = $(this).closest("tr");
+            updateEntry(updatedRow);
+        });
+});
+        
+    function updateEntry(row) {
+        var persId = row.find(".update-icon").data("persid");
+        var updatedData = {
+            Vorname: row.find("td:eq(1) input").val(),
+            Nachname: row.find("td:eq(2) input").val(),
+            Abteilung: row.find("td:eq(3) input").val(),
+            Geburtsdatum: row.find("td:eq(4) input").val(),
+            Eintrittsdatum: row.find("td:eq(5) input").val(),
+            Austrittsdatum: row.find("td:eq(6) input").val()
+        };
+
+        $.ajax({
+            url: "../php/updateEntry.php",
+            type: "post",
+            data: {
+                id: persId,
+                data: updatedData
+            },
+            success: function(response) {
+                console.log("Update erfolgreich: ", response);
+            },
+            error: function(xhr, status, error) {
+                console.error("Update fehlgeschlagen: ", error);
             }
         });
+    }
 
-        $(this).removeClass("fa-pen").addClass("fa-check").off("click");
-
-        // Ereignislistener für das Häkchen-Symbol
-        $(".fa-check").click(function() {
-            updateEntry($(this).data("persid"), row);
-        });
-    });
 });
 
-function updateEntry(persId, row) {
-    var updatedData = {};
-    row.find("td").each(function(index, td) {
-        if (!$(td).hasClass("action")) {
-            updatedData["column" + index] = $(td).find("input").val();
-        }
-    });
 
-    $.ajax({
-        url: "index.php", // Anfrage an die aktuelle Seite senden
-        type: "post",
-        data: {
-            action: 'update', // Eine Aktion hinzufügen, um zu identifizieren, was zu tun ist
-            id: persId,
-            data: updatedData
-        },
-        success: function(response) {
-            console.log("Update erfolgreich: ", response);
-            // Du kannst hier auch die Tabellenzeile aktualisieren, um die neuen Daten anzuzeigen
-        },
-        error: function(xhr, status, error) {
-            console.error("Update fehlgeschlagen: ", error);
-        }
-    });
 
-}
 </script>
+
 
 
 
