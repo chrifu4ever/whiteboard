@@ -348,35 +348,41 @@ canvas.addEventListener('wheel', function(e) {
 
 
 function scalePdf(obj, scaleFactor) {
-    if (!pdfDocument) {
-        console.error("PDF-Dokument ist nicht geladen.");
+    if (!obj || !obj.filepath) {
+        console.error("Kein PDF-Objekt oder Dateipfad verfügbar.");
         return;
     }
 
-    pdfDocument.getPage(obj.pageNum).then(page => {
-        const currentScale = obj.currentScale || 1;
-        const newScale = currentScale * scaleFactor;
-        obj.currentScale = newScale;
+    // Lade das PDF-Dokument basierend auf dem filepath des Objekts
+    pdfjsLib.getDocument(obj.filepath).promise.then(pdf => {
+        pdf.getPage(obj.pageNum).then(page => {
+            const viewport = page.getViewport({ scale: 1 });
+            const newScale = (obj.currentScale || 1) * scaleFactor;
+            const scaledViewport = page.getViewport({ scale: newScale });
 
-        const viewport = page.getViewport({ scale: newScale });
-        const canvas = document.createElement('canvas');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        const ctx = canvas.getContext('2d');
+            const canvas = document.createElement('canvas');
+            canvas.width = scaledViewport.width;
+            canvas.height = scaledViewport.height;
+            const ctx = canvas.getContext('2d');
 
-        const renderContext = {
-            canvasContext: ctx,
-            viewport: viewport
-        };
+            const renderContext = {
+                canvasContext: ctx,
+                viewport: scaledViewport
+            };
 
-        page.render(renderContext).promise.then(() => {
-            obj.content = canvas;
-            obj.width = viewport.width; // Aktualisiere die Breite
-            obj.height = viewport.height; // Aktualisiere die Höhe
-            drawObjects(); // Zeichne die Objekte neu, um das JSON zu aktualisieren
+            page.render(renderContext).promise.then(() => {
+                obj.content = canvas;
+                obj.width = canvas.width;
+                obj.height = canvas.height;
+                obj.currentScale = newScale;
+                drawObjects();
+            });
         });
+    }).catch(error => {
+        console.error('Fehler beim Laden/Skalieren der PDF-Seite:', error);
     });
 }
+
 
 
 
