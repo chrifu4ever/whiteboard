@@ -45,7 +45,7 @@ function handleImageUpload(file, filepath) {
     reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
-            objects.push({
+            const imageObject = {
                 type: 'image', 
                 content: img, 
                 x: 0, 
@@ -53,14 +53,17 @@ function handleImageUpload(file, filepath) {
                 width: img.width, 
                 height: img.height, 
                 filepath: filepath
-            });
+            };
+            objects.push(imageObject);
             drawObjects();
+            updateJsonForObject(imageObject, objects.length - 1); // Speichere die Bildinformationen in der JSON-Datei
         };
         img.src = e.target.result;
     };
 
     reader.readAsDataURL(file);
 }
+
 
 // Canvas löschen
 document.getElementById('clearCanvasButton').addEventListener('click', function() {
@@ -378,40 +381,6 @@ function scalePdf(obj, scaleFactor) {
     });
 }
 
-
-
-/* function saveCanvasAsImage() {
-    const canvas4k = document.createElement('canvas');
-    canvas4k.width = 3840; // 4K Breite
-    canvas4k.height = 2160; // 4K Höhe
-    const ctx = canvas4k.getContext('2d');
-
-    const scaleFactor = 3840 / document.getElementById('main-canvas').width;
-
-    const renderPromises = objects.map(obj => {
-        if (obj.type === 'pdf') {
-            // Verwende scalePdf, um das PDF auf dem neuen Canvas zu skalieren und zu rendern
-            return scalePdf(obj, scaleFactor, ctx);
-        } else {
-            // Skalieren und zeichnen für Bilder
-            const scaledX = obj.x * scaleFactor;
-            const scaledY = obj.y * scaleFactor;
-            const scaledWidth = obj.content.width * scaleFactor;
-            const scaledHeight = obj.content.height * scaleFactor;
-            ctx.drawImage(obj.content, scaledX, scaledY, scaledWidth, scaledHeight);
-            return Promise.resolve();
-        }
-    });
-
-    Promise.all(renderPromises).then(() => {
-        // Nachdem alle Objekte gerendert wurden, verarbeite das Canvas-Bild
-        const imageData = canvas4k.toDataURL('image/jpeg');
-        sendCanvasToServer(imageData);
-    });
-}
-
-// Füge einen Event-Listener zum Save-Button hinzu
-document.getElementById('saveButton').addEventListener('click', saveCanvasAsImage); */
 
 
 // Whiteboard veröffentlichen und speichern im saved-Ordner
