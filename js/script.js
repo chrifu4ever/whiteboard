@@ -133,6 +133,8 @@ function renderPdfPages(pdf, filepath, item = null) {
                     content: canvas,
                     x: item ? item.x : 0, // Verwende x-Wert aus 'item', wenn vorhanden, sonst 0
                     y: item ? item.y + 100 * (pageNum - 1) : 100 * (pageNum - 1), // Ähnlich für y-Wert
+                    width: item ? item.width : viewport.width, // Ähnlich für Breite
+                    height: item ? item.height : viewport.height, // Ähnlich für Höhe
                     pageNum: pageNum,
                     filepath: filepath
                 };
@@ -436,19 +438,24 @@ function removeFromJson(index) {
 
 
 
-//lädt das aktuelle canvas wenn dateien im ordner sind
 window.onload = function() {
-    // Lade die JSON-Daten beim Start
+    let loadedImagesCount = 0;
+    let totalImagesCount = 0;
+
     fetch('/php/loadJson.php')
     .then(response => response.json())
     .then(data => {
-        // Verarbeite jede Datei aus der JSON-Daten
+        totalImagesCount = data.filter(item => item.type === 'image').length;
+
         data.forEach(item => {
             if (item.type === 'image') {
-                // Lade Bild und füge es zum Canvas hinzu
-                loadAndAddImage(item);
+                loadAndAddImage(item, () => {
+                    loadedImagesCount++;
+                    if (loadedImagesCount === totalImagesCount) {
+                        drawObjects();
+                    }
+                });
             } else if (item.type === 'pdf') {
-                // Lade PDF und füge es zum Canvas hinzu
                 loadAndAddPdf(item);
             }
         });
@@ -456,21 +463,26 @@ window.onload = function() {
     .catch(error => console.error('Error:', error));
 };
 
-function loadAndAddImage(item) {
+
+function loadAndAddImage(item, callback) {
     const img = new Image();
     img.onload = function() {
+        img.width = item.width;
+        img.height = item.height;
+
         objects.push({
             type: 'image',
             content: img,
-            x: item.x, // Setze die x-Position aus dem JSON-Objekt
-            y: item.y, // Setze die y-Position aus dem JSON-Objekt
-            width: item.width, // Setze die Breite aus dem JSON-Objekt
-            height: item.height, // Setze die Höhe aus dem JSON-Objekt
+            x: item.x,
+            y: item.y,
+            width: item.width,
+            height: item.height,
             filepath: item.filepath
         });
-        drawObjects();
+
+        callback();
     };
-    img.src = item.filepath; // Setze den Pfad zur Bilddatei
+    img.src = item.filepath;
 }
 
 function loadAndAddPdf(item) {
@@ -481,7 +493,10 @@ function loadAndAddPdf(item) {
         const typedarray = new Uint8Array(buffer);
 
         pdfjsLib.getDocument({ data: typedarray }).promise.then(pdf => {
-            renderPdfPages(pdf, item.filepath, item);
+            // Rufe für jede Seite die renderPdfPages Funktion mit den Werten aus der JSON-Datei auf
+            for (let pageNum = 1; pageNum <= pdf.numPages && pageNum <= 10; pageNum++) {
+                renderPdfPages(pdf, item.filepath, item.x, item.y, item.width, item.height, pageNum);
+            }
         });
     })
     .catch(error => console.error('Error beim Laden der PDF:', error));
