@@ -17,7 +17,7 @@
 
     </div>
     <div id="canvas-container">
-        <canvas id="main-canvas" width="1920" height="1080"></canvas>
+        <canvas id="main-canvas"></canvas>
     </div>
 
     <p><a href="../frontend/index.php" target="_blank">Aktuelles Whiteboard ansehen</a></p>

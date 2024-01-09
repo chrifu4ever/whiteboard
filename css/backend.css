@@ -8,9 +8,14 @@
 #canvas-container {
   display: flex;
   justify-content: center;
-  padding: 20px;
+ 
+  width: 100%;
+  height: 100%;
 }
 
 #main-canvas {
   border: 1px solid black;
+  width: 100%;
+  height: 100%;
 }
+

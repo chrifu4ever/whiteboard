@@ -50,7 +50,7 @@ function handleImageUpload(file, filepath) {
                 content: img, 
                 x: 0, 
                 y: 0, 
-                width: img.width, 
+                width: 200, 
                 height: img.height, 
                 filepath: filepath
             };
