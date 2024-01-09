@@ -435,21 +435,7 @@ function removeFromJson(index) {
     .catch(error => console.error('Error:', error));
 }
 
-// Laden von Bildern und PDFs aus JSON
-window.onload = function() {
-    fetch('/php/loadJson.php')
-    .then(response => response.json())
-    .then(data => {
-        data.forEach(item => {
-            if (item.type === 'image') {
-                loadAndAddImageFromJson(item);
-            } else if (item.type === 'pdf') {
-                loadAndAddPdfFromJson(item);
-            }
-        });
-    })
-    .catch(error => console.error('Error:', error));
-};
+
 
 function loadAndAddImageFromJson(item) {
     const img = new Image();

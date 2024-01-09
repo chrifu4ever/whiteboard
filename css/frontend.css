@@ -50,15 +50,14 @@ body {
   margin: 1vh 1vw;
 }
 
-#main-canvas {
-  border: 1px solid black;
-  width: 100%;
-  height: 100%;
-  
+#canvas-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
 }
 
-#canvas-container {
-  width: 80vw;
+#main-canvas {
+  border: 1px solid black;
 }
 
 #right-div {

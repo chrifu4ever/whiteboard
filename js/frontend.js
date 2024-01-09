@@ -6,7 +6,101 @@ let resizing = false;
 let resizeDirection;
 let dragStartPoint = {};
 let currentObjectIndex = null;
-let pdfDocument = null;
+
+
+function renderPdfPages(pdf, filepath, item = null) {
+    const maxPages = Math.min(10, pdf.numPages); // Zeige maximal 10 Seiten an
+    for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
+        pdf.getPage(pageNum).then(page => {
+            const viewport = page.getViewport({ scale: 2 }); 
+            const canvas = document.createElement('canvas'); 
+            canvas.width = viewport.width; 
+            canvas.height = viewport.height; 
+            const ctx = canvas.getContext('2d'); 
+
+            const renderContext = {
+                canvasContext: ctx, 
+                viewport: viewport
+            };
+
+            page.render(renderContext).promise.then(() => {
+                const obj = {
+                    type: 'pdf',
+                    content: canvas,
+                    x: item ? item.x : 0, // Verwende x-Wert aus 'item', wenn vorhanden, sonst 0
+                    y: item ? item.y + 100 * (pageNum - 1) : 100 * (pageNum - 1), // Ähnlich für y-Wert
+                    width: item ? item.width : viewport.width, // Ähnlich für Breite
+                    height: item ? item.height : viewport.height, // Ähnlich für Höhe
+                    pageNum: pageNum,
+                    filepath: filepath
+                };
+                objects.push(obj);
+                drawObjects();
+            });
+        });
+    }
+}
+
+
+// ... Code zum Zeichnen von Objekten ...
+function drawObjects(filepath) {
+    console.log("Gezeichnet");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    objects.forEach((obj, index) => {
+        // Setze Schatten nur für PDF-Objekte
+        if (obj.type === 'pdf') {
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetX = 5;
+            ctx.shadowOffsetY = 5;
+        } else {
+            // Kein Schatten für andere Objekte
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+        }
+
+        // Zeichne das Objekt
+        ctx.drawImage(obj.content, obj.x, obj.y, obj.content.width, obj.content.height);
+
+        // Zeichne eine Umrandung, wenn das Objekt ausgewählt ist
+        if (currentObjectIndex === index) {
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(obj.x, obj.y, obj.content.width, obj.content.height);
+        }
+        updateJsonForObject(obj, index, filepath);
+    });
+}
+
+function updateJsonForObject(obj, index) {
+    const fileInfo = {
+        type: obj.type,
+        filepath: obj.filepath,
+        x: obj.x,
+        y: obj.y,
+        width: obj.width, 
+        height: obj.height, 
+        page: obj.type === 'pdf' ? obj.pageNum : undefined,
+        index: index 
+    };
+    updateJsonFile(fileInfo);
+}
+
+function updateJsonFile(fileInfo) {
+    fetch('/php/saveToJson.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(fileInfo)
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+}
+
 
 
 // ... Code zum Verschieben von Objekten ...
@@ -64,7 +158,50 @@ canvas.addEventListener('mouseout', function() {
 });
 
 
+//TOUCH EVENTS
+canvas.addEventListener('touchstart', function(e) {
+    const canvasRect = canvas.getBoundingClientRect();
+    const touchX = e.touches[0].clientX - canvasRect.left;
+    const touchY = e.touches[0].clientY - canvasRect.top;
+    let found = false;
 
+    objects.slice().reverse().forEach((obj, index) => {
+        if (!found && touchX > obj.x && touchX < obj.x + obj.content.width && touchY > obj.y && touchY < obj.y + obj.content.height) {
+            isDragging = true;
+            dragStartPoint.x = touchX - obj.x;
+            dragStartPoint.y = touchY - obj.y;
+            currentObjectIndex = objects.length - 1 - index;
+
+            const selectedObject = objects.splice(currentObjectIndex, 1)[0];
+            objects.push(selectedObject);
+            currentObjectIndex = objects.length - 1;
+
+            found = true;
+        }
+    });
+
+    if (!found) {
+        currentObjectIndex = null;
+    }
+
+    drawObjects();
+});
+
+canvas.addEventListener('touchmove', function(e) {
+    if (isDragging) {
+        const canvasRect = canvas.getBoundingClientRect();
+        const touchX = e.touches[0].clientX - canvasRect.left;
+        const touchY = e.touches[0].clientY - canvasRect.top;
+        objects[currentObjectIndex].x = touchX - dragStartPoint.x;
+        objects[currentObjectIndex].y = touchY - dragStartPoint.y;
+        drawObjects();
+    }
+});
+
+canvas.addEventListener('touchend', function() {
+    isDragging = false;
+    resizing = false;
+});
 
 
 function isNearEdge(mouseX, mouseY, obj) {
@@ -111,193 +248,127 @@ canvas.addEventListener('wheel', function(e) {
 });
 
 
-
 function scalePdf(obj, scaleFactor) {
-    if (!pdfDocument) {
-        console.error("PDF-Dokument ist nicht geladen.");
+    if (!obj || !obj.filepath) {
+        console.error("Kein PDF-Objekt oder Dateipfad verfügbar.");
         return;
     }
 
-    pdfDocument.getPage(obj.pageNum).then(page => {
-        const currentScale = obj.currentScale || 1;
-        const newScale = currentScale * scaleFactor;
-        obj.currentScale = newScale;
+    // Lade das PDF-Dokument basierend auf dem filepath des Objekts
+    pdfjsLib.getDocument(obj.filepath).promise.then(pdf => {
+        pdf.getPage(obj.pageNum).then(page => {
+            const viewport = page.getViewport({ scale: 1 });
+            const newScale = (obj.currentScale || 1) * scaleFactor;
+            const scaledViewport = page.getViewport({ scale: newScale });
 
-        const viewport = page.getViewport({ scale: newScale });
-        const canvas = document.createElement('canvas');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        const ctx = canvas.getContext('2d');
+            const canvas = document.createElement('canvas');
+            canvas.width = scaledViewport.width;
+            canvas.height = scaledViewport.height;
+            const ctx = canvas.getContext('2d');
 
-        const renderContext = {
-            canvasContext: ctx,
-            viewport: viewport
-        };
+            const renderContext = {
+                canvasContext: ctx,
+                viewport: scaledViewport
+            };
 
-        page.render(renderContext).promise.then(() => {
-            obj.content = canvas;
-            obj.width = viewport.width; // Aktualisiere die Breite
-            obj.height = viewport.height; // Aktualisiere die Höhe
-            drawObjects(); // Zeichne die Objekte neu, um das JSON zu aktualisieren
+            page.render(renderContext).promise.then(() => {
+                obj.content = canvas;
+                obj.width = canvas.width;
+                obj.height = canvas.height;
+                obj.currentScale = newScale;
+                drawObjects();
+            });
         });
+    }).catch(error => {
+        console.error('Fehler beim Laden/Skalieren der PDF-Seite:', error);
     });
 }
 
 
 
-//lädt das aktuelle canvas wenn dateien im ordner sind
-window.onload = function() {
 
-    console.log("Lade Whiteboard aus savedFiles");
-    // 
-    fetch('/php/loadJsonFrontend.php')
+
+
+
+
+// Laden von Bildern und PDFs aus JSON
+window.onload = function() {
+    fetch('/php/loadJson.php')
     .then(response => response.json())
     .then(data => {
-        // Verarbeite jede Datei aus der JSON-Daten
         data.forEach(item => {
             if (item.type === 'image') {
-                // Lade Bild und füge es zum Canvas hinzu
-                loadAndAddImage(item);
+                loadAndAddImageFromJson(item);
             } else if (item.type === 'pdf') {
-                // Lade PDF und füge es zum Canvas hinzu
-                loadAndAddPdf(item);
+                loadAndAddPdfFromJson(item);
             }
         });
     })
     .catch(error => console.error('Error:', error));
 };
 
-function loadAndAddImage(item) {
-    console.log("Lade Bild");
+function loadAndAddImageFromJson(item) {
     const img = new Image();
     img.onload = function() {
+        img.width = item.width;
+        img.height = item.height;
         objects.push({
             type: 'image',
             content: img,
-            x: item.x, 
-            y: item.y, 
-            width: item.width, 
-            height: item.height, 
+            x: item.x,
+            y: item.y,
+            width: item.width,
+            height: item.height,
             filepath: item.filepath
         });
         drawObjects();
     };
-    img.src = item.filepath; // Setze den Pfad zur Bilddatei
+    img.src = item.filepath;
 }
 
-function loadAndAddPdf(item) {
-    console.log("Lade PDF");
-    // Lade die PDF-Datei von ihrem Pfad
+function loadAndAddPdfFromJson(item) {
     fetch(item.filepath)
     .then(response => response.arrayBuffer())
     .then(buffer => {
         const typedarray = new Uint8Array(buffer);
-
         pdfjsLib.getDocument({ data: typedarray }).promise.then(pdf => {
-            renderPdfPages(pdf, item.filepath, item);
+            renderPdfPageFromJson(pdf, item);
         });
     })
     .catch(error => console.error('Error beim Laden der PDF:', error));
-    
 }
 
+function renderPdfPageFromJson(pdf, item) {
+    pdf.getPage(item.page).then(page => {
+        const viewport = page.getViewport({ scale: 1 });
+        const scale = item.width / viewport.width;
+        const scaledViewport = page.getViewport({ scale: scale });
 
-
-function renderPdfPages(pdf, filepath, item = null) {
-    console.log("Render PDF");
-    const maxPages = Math.min(10, pdf.numPages); // oder eine andere Logik, um die Seitenanzahl zu begrenzen
-    for (let pageNum = 10; pageNum <= maxPages; pageNum++) {
-        pdf.getPage(pageNum).then(page => {
-            const viewport = page.getViewport({ scale: 1 });
-            const canvas = document.createElement('canvas');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            const ctx = canvas.getContext('2d');
-
-            const renderContext = {
-                canvasContext: ctx,
-                viewport: viewport
-            };
-
-            page.render(renderContext).promise.then(() => {
-                                const obj = {
-                    type: 'pdf',
-                    content: canvas,
-                    x: item ? item.x : 0, // Verwende x-Wert aus 'item', wenn vorhanden, sonst 0
-                    y: item ? item.y + 100 * (pageNum - 1) : 100 * (pageNum - 1), // Ähnlich für y-Wert
-                    pageNum: pageNum,
-                    filepath: filepath
-                };
-                objects.push(obj);
-                drawObjects();
-            });
-        });
-    }
-}
-
-
-function scalePdf(obj, scaleFactor) {
-    console.log("Skaliere PDF");
-    if (!pdfDocument) {
-        console.error("PDF-Dokument ist nicht geladen.");
-        return;
-    }
-
-    pdfDocument.getPage(obj.pageNum).then(page => {
-        console.log("Skaliere PDF Seite "+obj.pageNum+" um "+scaleFactor);
-        const currentScale = obj.currentScale || 1;
-        const newScale = currentScale * scaleFactor;
-        obj.currentScale = newScale;
-
-        const viewport = page.getViewport({ scale: newScale });
         const canvas = document.createElement('canvas');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
+        canvas.width = scaledViewport.width;
+        canvas.height = scaledViewport.height;
         const ctx = canvas.getContext('2d');
 
         const renderContext = {
             canvasContext: ctx,
-            viewport: viewport
+            viewport: scaledViewport
         };
 
         page.render(renderContext).promise.then(() => {
-            obj.content = canvas;
-            obj.width = viewport.width; // Aktualisiere die Breite
-            obj.height = viewport.height; // Aktualisiere die Höhe
-            drawObjects(); // Zeichne die Objekte neu, um das JSON zu aktualisieren
+            const obj = {
+                type: 'pdf',
+                content: canvas,
+                x: item.x,
+                y: item.y,
+                width: canvas.width,
+                height: canvas.height,
+                pageNum: item.page,
+                filepath: item.filepath
+            };
+            objects.push(obj);
+            drawObjects();
         });
-    });
-}
-
-// ... Code zum Zeichnen von Objekten ...
-function drawObjects() {
-    console.log("Gezeichnet");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    objects.forEach((obj, index) => {
-        // Setze Schatten nur für PDF-Objekte
-        if (obj.type === 'pdf') {
-            console.log("Setze Schatten");
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-            ctx.shadowBlur = 10;
-            ctx.shadowOffsetX = 5;
-            ctx.shadowOffsetY = 5;
-        } else {
-            // Kein Schatten für andere Objekte
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-        }
-
-        // Zeichne das Objekt
-        ctx.drawImage(obj.content, obj.x, obj.y, obj.content.width, obj.content.height);
-
-        // Zeichne eine Umrandung, wenn das Objekt ausgewählt ist
-        if (currentObjectIndex === index) {
-            ctx.strokeStyle = 'red';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(obj.x, obj.y, obj.content.width, obj.content.height);
-        }
-        
+    }).catch(error => {
+        console.error('Fehler beim Rendern der PDF-Seite:', error);
     });
 }

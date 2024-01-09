@@ -13,7 +13,7 @@
 
     <div id="main-div">
         <div id="canvas-container">
-            <canvas id="main-canvas"></canvas>
+        <canvas id="main-canvas" width="1920" height="1080"></canvas>
         </div>
 
         <div id="right-div">
@@ -54,7 +54,7 @@
         </div>
     </div>
 
-    <script src="../js/frontend.js"></script>
+    
 
     <script>
         window.onload = function () {
@@ -68,6 +68,7 @@
             document.getElementById("screenSizeInfoDiv").innerHTML = "Screen Size: " + screenX + " x " + screenY;
         }
     </script>
+    <script src="../js/frontend.js"></script>
 
 
 </body>
