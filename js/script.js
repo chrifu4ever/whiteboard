@@ -91,39 +91,34 @@ function clearFilesDirectory() {
 }
 
 // PDF hochladen
-
 let pdfDocument = null;
-
 
 function handlePdfUpload(file, filepath) {
     const reader = new FileReader();
-
     reader.onload = function(e) {
         const typedarray = new Uint8Array(this.result);
-
         pdfjsLib.getDocument({ data: typedarray }).promise.then(pdf => {
-            pdfDocument = pdf; // Speichere die PDF-Dokument-Instanz global
+            pdfDocument = pdf;
             renderPdfPages(pdf, filepath);
         });
     };
-
     reader.readAsArrayBuffer(file);
 }
 
 
 
 function renderPdfPages(pdf, filepath, item = null) {
-    const maxPages = Math.min(10, pdf.numPages); // oder eine andere Logik, um die Seitenanzahl zu begrenzen
+    const maxPages = Math.min(10, pdf.numPages); // Zeige maximal 10 Seiten an
     for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
         pdf.getPage(pageNum).then(page => {
-            const viewport = page.getViewport({ scale: 2 });
-            const canvas = document.createElement('canvas');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            const ctx = canvas.getContext('2d');
+            const viewport = page.getViewport({ scale: 2 }); 
+            const canvas = document.createElement('canvas'); 
+            canvas.width = viewport.width; 
+            canvas.height = viewport.height; 
+            const ctx = canvas.getContext('2d'); 
 
             const renderContext = {
-                canvasContext: ctx,
+                canvasContext: ctx, 
                 viewport: viewport
             };
 
@@ -391,19 +386,16 @@ document.getElementById('goLiveWhiteboardButton').addEventListener('click', func
         const userConfirmation = confirm("Möchtest du das aktuelle Whiteboard veröffentlichen? Dadurch wird das bisherige Whiteboard überschrieben und dieses angezeigt.");
 
         if (userConfirmation) {
-            copyFilesToSaved();
+            fetch('../php/copyFiles.php', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => console.log(data.message))
+            .catch(error => console.error('Error:', error));
         }
     } else {
         alert("Es gibt keine Objekte auf dem Whiteboard, die veröffentlicht werden können.");
     }
 });
 
-function copyFilesToSaved() {
-    fetch('../php/copyFiles.php', { method: 'POST' })
-    .then(response => response.json())
-    .then(data => console.log(data.message))
-    .catch(error => console.error('Error:', error));
-}
 
 
 //Einzelne Elemente löschen vom Canvas, aus der JSON und aus dem Ordner wenn keine Elemente mehr vorhanden sind
@@ -424,6 +416,7 @@ canvas.addEventListener('contextmenu', function(e) {
 });
 
 function removeFromJson(index) {
+    console.log("Removed from JSON");
     fetch('/php/removeFromJson.php', {
         method: 'POST',
         headers: {
@@ -436,40 +429,27 @@ function removeFromJson(index) {
     .catch(error => console.error('Error:', error));
 }
 
-
-
+// Laden von Bildern und PDFs aus JSON
 window.onload = function() {
-    let loadedImagesCount = 0;
-    let totalImagesCount = 0;
-
     fetch('/php/loadJson.php')
     .then(response => response.json())
     .then(data => {
-        totalImagesCount = data.filter(item => item.type === 'image').length;
-
         data.forEach(item => {
             if (item.type === 'image') {
-                loadAndAddImage(item, () => {
-                    loadedImagesCount++;
-                    if (loadedImagesCount === totalImagesCount) {
-                        drawObjects();
-                    }
-                });
+                loadAndAddImageFromJson(item);
             } else if (item.type === 'pdf') {
-                loadAndAddPdf(item);
+                loadAndAddPdfFromJson(item);
             }
         });
     })
     .catch(error => console.error('Error:', error));
 };
 
-
-function loadAndAddImage(item, callback) {
+function loadAndAddImageFromJson(item) {
     const img = new Image();
     img.onload = function() {
         img.width = item.width;
         img.height = item.height;
-
         objects.push({
             type: 'image',
             content: img,
@@ -479,26 +459,54 @@ function loadAndAddImage(item, callback) {
             height: item.height,
             filepath: item.filepath
         });
-
-        callback();
+        drawObjects();
     };
     img.src = item.filepath;
 }
 
-function loadAndAddPdf(item) {
-    // Lade die PDF-Datei von ihrem Pfad
+function loadAndAddPdfFromJson(item) {
     fetch(item.filepath)
     .then(response => response.arrayBuffer())
     .then(buffer => {
         const typedarray = new Uint8Array(buffer);
-
         pdfjsLib.getDocument({ data: typedarray }).promise.then(pdf => {
-            // Rufe für jede Seite die renderPdfPages Funktion mit den Werten aus der JSON-Datei auf
-            for (let pageNum = 1; pageNum <= pdf.numPages && pageNum <= 10; pageNum++) {
-                renderPdfPages(pdf, item.filepath, item.x, item.y, item.width, item.height, pageNum);
-            }
+            renderPdfPageFromJson(pdf, item);
         });
     })
     .catch(error => console.error('Error beim Laden der PDF:', error));
 }
 
+function renderPdfPageFromJson(pdf, item) {
+    pdf.getPage(item.page).then(page => {
+        const viewport = page.getViewport({ scale: 1 });
+        const scale = item.width / viewport.width;
+        const scaledViewport = page.getViewport({ scale: scale });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = scaledViewport.width;
+        canvas.height = scaledViewport.height;
+        const ctx = canvas.getContext('2d');
+
+        const renderContext = {
+            canvasContext: ctx,
+            viewport: scaledViewport
+        };
+
+        page.render(renderContext).promise.then(() => {
+            const obj = {
+                type: 'pdf',
+                content: canvas,
+                x: item.x,
+                y: item.y,
+                width: canvas.width,
+                height: canvas.height,
+                pageNum: item.page,
+                filepath: item.filepath
+            };
+            objects.push(obj);
+            drawObjects();
+        });
+    }).catch(error => {
+        console.error('Fehler beim Rendern der PDF-Seite:', error);
+    });
+}
