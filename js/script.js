@@ -21,17 +21,15 @@ document.getElementById('fileInputButton').addEventListener('change', function(e
     })
     .then(response => response.json())
     .then(data => {
-        // Senden der Dateiinformationen an saveToJson.php
-        const fileInfo = {
-            filetype: file.type.includes('image') ? 'image' : 'pdf',
-            filepath: data.filePath
-        };
-       
-
-        if (file.type.match('image.*')) {
-            handleImageUpload(file, data.filePath);
-        } else if (file.type === 'application/pdf') {
-            handlePdfUpload(file, data.filePath);
+        if (file.type.match('image.*') || file.type === 'application/pdf') {
+            // Verarbeite Bild- oder SVG-Upload
+            if(data.filePath) { // Für normale Bilder
+                loadAndAddImage(data.filePath);
+            } else if(data.svgFiles && data.svgFiles.length) { // Für SVGs, die aus PDF konvertiert wurden
+                data.svgFiles.forEach(svgFile => {
+                    loadAndAddImage(svgFile);
+                });
+            }
         }
     })
     .catch(error => console.error('Error:', error));
@@ -39,30 +37,43 @@ document.getElementById('fileInputButton').addEventListener('change', function(e
 
 
 // Bild hochladen
-function handleImageUpload(file, filepath) {
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-            const imageObject = {
-                type: 'image', 
-                content: img, 
-                x: 0, 
-                y: 0, 
-                width: img.width, 
-                height: img.height, 
-                filepath: filepath
-            };
-            objects.push(imageObject);
-            drawObjects();
-            updateJsonForObject(imageObject, objects.length - 1); // Speichere die Bildinformationen in der JSON-Datei
-        };
-        img.src = e.target.result;
-    };
+function loadAndAddImage(filePath) {
+    const img = new Image();
+    img.onload = function() {
+        // Skalieren des Bildes, um es an eine maximale Größe anzupassen (optional)
+        let width = img.width;
+        let height = img.height;
+        const maxDimension = 300;
 
-    reader.readAsDataURL(file);
+        // Skaliere das Bild, um das Seitenverhältnis zu bewahren
+        if (width > height && width > maxDimension) {
+            height *= maxDimension / width;
+            width = maxDimension;
+        } else if (height > maxDimension) {
+            width *= maxDimension / height;
+            height = maxDimension;
+        }
+
+        // Füge das Bildobjekt der Objektliste hinzu
+        objects.push({
+            type: 'image',
+            content: img,
+            x: 0, // Anfangsposition, kann geändert werden
+            y: 0, // Anfangsposition, kann geändert werden
+            width: width,
+            height: height,
+            filepath: filePath
+        });
+
+        // Zeichne alle Objekte auf dem Canvas neu
+        drawObjects();
+    };
+    img.onerror = function() {
+        console.error("Fehler beim Laden des Bildes: " + filePath);
+    };
+    img.src = filePath;
 }
+
 
 
 // Canvas löschen
