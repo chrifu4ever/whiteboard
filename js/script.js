@@ -38,6 +38,8 @@ document.getElementById('fileInputButton').addEventListener('change', function(e
 
 // Bild hochladen
 function loadAndAddImage(filePath) {
+
+    console.log("Bild hochgeladen");
     const img = new Image();
     img.onload = function() {
         // Skalieren des Bildes, um es an eine maximale Größe anzupassen (optional)
