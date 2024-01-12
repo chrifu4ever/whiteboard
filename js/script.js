@@ -1,5 +1,5 @@
-const canvas = document.getElementById('main-canvas');
-const ctx = canvas.getContext('2d');
+const canvas = document.getElementById("main-canvas");
+const ctx = canvas.getContext("2d");
 let objects = [];
 let isDragging = false;
 let resizing = false;
@@ -7,525 +7,404 @@ let resizeDirection;
 let dragStartPoint = {};
 let currentObjectIndex = null;
 
-
-
 // ... Code zum Laden von Bildern und PDFs ...
-document.getElementById('fileInputButton').addEventListener('change', function(e) {
+document
+  .getElementById("fileInputButton")
+  .addEventListener("change", function (e) {
     const file = e.target.files[0];
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
-    fetch('../php/fileUpload.php', { 
-        method: 'POST',
-        body: formData
+    fetch("../php/fileUpload.php", {
+      method: "POST",
+      body: formData,
     })
-    .then(response => response.json())
-    .then(data => {
-        if (file.type.match('image.*') || file.type === 'application/pdf') {
-            // Verarbeite Bild- oder SVG-Upload
-            if(data.filePath) { // Für normale Bilder
-                loadAndAddImage(data.filePath);
-            } else if(data.svgFiles && data.svgFiles.length) { // Für SVGs, die aus PDF konvertiert wurden
-                data.svgFiles.forEach(svgFile => {
-                    loadAndAddImage(svgFile);
-                });
-            }
+      .then((response) => response.json())
+      .then((data) => {
+        if (file.type.match("image.*") || file.type === "application/pdf") {
+          // Verarbeite Bild- oder SVG-Upload
+          if (data.filePath) {
+            // Für normale Bilder
+            loadAndAddImage(data.filePath);
+          } else if (data.svgFiles && data.svgFiles.length) {
+            // Für SVGs, die aus PDF konvertiert wurden
+            data.svgFiles.forEach((svgFile) => {
+              loadAndAddImage(svgFile);
+            });
+          }
         }
-    })
-    .catch(error => console.error('Error:', error));
-});
-
+      })
+      .catch((error) => console.error("Error:", error));
+  });
 
 // Bild hochladen
 function loadAndAddImage(filePath) {
+  console.log("Bild hochgeladen");
+  const img = new Image();
+  img.onload = function () {
+    // Skalieren des Bildes, um es an eine maximale Größe anzupassen (optional)
+    let width = img.width;
+    let height = img.height;
+    const maxDimension = 300;
 
-    console.log("Bild hochgeladen");
-    const img = new Image();
-    img.onload = function() {
-        // Skalieren des Bildes, um es an eine maximale Größe anzupassen (optional)
-        let width = img.width;
-        let height = img.height;
-        const maxDimension = 300;
+    // Skaliere das Bild, um das Seitenverhältnis zu bewahren
+    if (width > height && width > maxDimension) {
+      height *= maxDimension / width;
+      width = maxDimension;
+    } else if (height > maxDimension) {
+      width *= maxDimension / height;
+      height = maxDimension;
+    }
 
-        // Skaliere das Bild, um das Seitenverhältnis zu bewahren
-        if (width > height && width > maxDimension) {
-            height *= maxDimension / width;
-            width = maxDimension;
-        } else if (height > maxDimension) {
-            width *= maxDimension / height;
-            height = maxDimension;
-        }
+    // Füge das Bildobjekt der Objektliste hinzu
+    objects.push({
+      type: "image",
+      content: img,
+      x: 0, // Anfangsposition, kann geändert werden
+      y: 0, // Anfangsposition, kann geändert werden
+      width: width,
+      height: height,
+      filepath: filePath,
+    });
 
-        // Füge das Bildobjekt der Objektliste hinzu
-        objects.push({
-            type: 'image',
-            content: img,
-            x: 0, // Anfangsposition, kann geändert werden
-            y: 0, // Anfangsposition, kann geändert werden
-            width: width,
-            height: height,
-            filepath: filePath
-        });
-
-        // Zeichne alle Objekte auf dem Canvas neu
-        drawObjects();
-    };
-    img.onerror = function() {
-        console.error("Fehler beim Laden des Bildes: " + filePath);
-    };
-    img.src = filePath;
+    // Zeichne alle Objekte auf dem Canvas neu
+    drawObjects();
+  };
+  img.onerror = function () {
+    console.error("Fehler beim Laden des Bildes: " + filePath);
+  };
+  img.src = filePath;
 }
 
-
-
 // Canvas löschen
-document.getElementById('clearCanvasButton').addEventListener('click', function() {
-    const userConfirmation = confirm("Möchtest du wirklich alle Elemente vom Canvas löschen?");
+document
+  .getElementById("clearCanvasButton")
+  .addEventListener("click", function () {
+    const userConfirmation = confirm(
+      "Möchtest du wirklich alle Elemente vom Canvas löschen?"
+    );
 
     if (userConfirmation) {
-        clearCanvas();
-        clearFilesDirectory();
+      clearCanvas();
+      clearFilesDirectory();
     }
-});
-
+  });
 
 function clearCanvas() {
-    // Lösche alle Objekte auf dem Canvas
-    objects = [];
-    drawObjects(); // Zeichne das Canvas neu, um die Änderungen anzuzeigen
+  // Lösche alle Objekte auf dem Canvas
+  objects = [];
+  drawObjects(); // Zeichne das Canvas neu, um die Änderungen anzuzeigen
 }
 
 function clearFilesDirectory() {
-    // Sende Anfrage an PHP-Server, um Dateien im ../files/ Ordner zu löschen
-    fetch('/php/clearFilesDirectory.php', { method: 'POST' })
-    .then(response => response.json())
-    .then(data => console.log(data.message))
-    .catch(error => console.error('Error:', error));
+  // Sende Anfrage an PHP-Server, um Dateien im ../files/ Ordner zu löschen
+  fetch("/php/clearFilesDirectory.php", { method: "POST" })
+    .then((response) => response.json())
+    .then((data) => console.log(data.message))
+    .catch((error) => console.error("Error:", error));
 }
-
-// PDF hochladen
-let pdfDocument = null;
-
-function handlePdfUpload(file, filepath) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const typedarray = new Uint8Array(this.result);
-        pdfjsLib.getDocument({ data: typedarray }).promise.then(pdf => {
-            pdfDocument = pdf;
-            renderPdfPages(pdf, filepath);
-        });
-    };
-    reader.readAsArrayBuffer(file);
-}
-
-
-
-function renderPdfPages(pdf, filepath, item = null) {
-    const maxPages = Math.min(10, pdf.numPages); // Zeige maximal 10 Seiten an
-    for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
-        pdf.getPage(pageNum).then(page => {
-            const viewport = page.getViewport({ scale: 2 }); 
-            const canvas = document.createElement('canvas'); 
-            canvas.width = viewport.width; 
-            canvas.height = viewport.height; 
-            const ctx = canvas.getContext('2d'); 
-
-            const renderContext = {
-                canvasContext: ctx, 
-                viewport: viewport
-            };
-
-            page.render(renderContext).promise.then(() => {
-                const obj = {
-                    type: 'pdf',
-                    content: canvas,
-                    x: item ? item.x : 0, // Verwende x-Wert aus 'item', wenn vorhanden, sonst 0
-                    y: item ? item.y + 100 * (pageNum - 1) : 100 * (pageNum - 1), // Ähnlich für y-Wert
-                    width: item ? item.width : viewport.width, // Ähnlich für Breite
-                    height: item ? item.height : viewport.height, // Ähnlich für Höhe
-                    pageNum: pageNum,
-                    filepath: filepath
-                };
-                objects.push(obj);
-                drawObjects();
-            });
-        });
-    }
-}
-
 
 // ... Code zum Zeichnen von Objekten ...
 function drawObjects(filepath) {
-    console.log("Gezeichnet");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    objects.forEach((obj, index) => {
-        // Setze Schatten nur für PDF-Objekte
-        if (obj.type === 'pdf') {
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-            ctx.shadowBlur = 10;
-            ctx.shadowOffsetX = 5;
-            ctx.shadowOffsetY = 5;
-        } else {
-            // Kein Schatten für andere Objekte
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-        }
+  console.log("Gezeichnet");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  objects.forEach((obj, index) => {
+    // Setze Schatten nur für PDF-Objekte
+    if (obj.type === "pdf") {
+      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetX = 5;
+      ctx.shadowOffsetY = 5;
+    } else {
+      // Kein Schatten für andere Objekte
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+    }
 
-        // Zeichne das Objekt
-        ctx.drawImage(obj.content, obj.x, obj.y, obj.content.width, obj.content.height);
+    // Zeichne das Objekt
+    ctx.drawImage(
+      obj.content,
+      obj.x,
+      obj.y,
+      obj.content.width,
+      obj.content.height
+    );
 
-        // Zeichne eine Umrandung, wenn das Objekt ausgewählt ist
-        if (currentObjectIndex === index) {
-            ctx.strokeStyle = 'red';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(obj.x, obj.y, obj.content.width, obj.content.height);
-        }
-        updateJsonForObject(obj, index, filepath);
-    });
+    // Zeichne eine Umrandung, wenn das Objekt ausgewählt ist
+    if (currentObjectIndex === index) {
+      ctx.strokeStyle = "red";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(obj.x, obj.y, obj.content.width, obj.content.height);
+    }
+    updateJsonForObject(obj, index, filepath);
+  });
 }
 
 function updateJsonForObject(obj, index) {
-    const fileInfo = {
-        type: obj.type,
-        filepath: obj.filepath,
-        x: obj.x,
-        y: obj.y,
-        width: obj.width, 
-        height: obj.height, 
-        page: obj.type === 'pdf' ? obj.pageNum : undefined,
-        index: index 
-    };
-    updateJsonFile(fileInfo);
+  const fileInfo = {
+    type: obj.type,
+    filepath: obj.filepath,
+    x: obj.x,
+    y: obj.y,
+    width: obj.width,
+    height: obj.height,
+    index: index,
+  };
+  updateJsonFile(fileInfo);
 }
 
 function updateJsonFile(fileInfo) {
-    fetch('/php/saveToJson.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(fileInfo)
-    })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error('Error:', error));
+  fetch("/php/saveToJson.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(fileInfo),
+  })
+    .then((response) => response.json())
+    .then((data) => console.log(data))
+    .catch((error) => console.error("Error:", error));
 }
 
-
-
 // ... Code zum Verschieben von Objekten ...
-canvas.addEventListener('mousedown', function(e) {
+canvas.addEventListener("mousedown", function (e) {
+  const canvasRect = canvas.getBoundingClientRect();
+  const mouseX = e.clientX - canvasRect.left;
+  const mouseY = e.clientY - canvasRect.top;
+  let found = false;
+
+  objects
+    .slice()
+    .reverse()
+    .forEach((obj, index) => {
+      if (
+        !found &&
+        mouseX > obj.x &&
+        mouseX < obj.x + obj.content.width &&
+        mouseY > obj.y &&
+        mouseY < obj.y + obj.content.height
+      ) {
+        isDragging = true;
+        dragStartPoint.x = mouseX - obj.x;
+        dragStartPoint.y = mouseY - obj.y;
+        currentObjectIndex = objects.length - 1 - index; // Da wir die Liste umgekehrt durchlaufen
+
+        // Bringe das ausgewählte Objekt in den Vordergrund
+        const selectedObject = objects.splice(currentObjectIndex, 1)[0];
+        objects.push(selectedObject);
+        currentObjectIndex = objects.length - 1;
+
+        found = true;
+      }
+    });
+
+  if (!found) {
+    currentObjectIndex = null;
+  }
+
+  drawObjects();
+});
+
+// ... Code zum Ändern der Größe von Objekten ...
+canvas.addEventListener("mousemove", function (e) {
+  if (isDragging) {
     const canvasRect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - canvasRect.left;
     const mouseY = e.clientY - canvasRect.top;
-    let found = false;
-
-    objects.slice().reverse().forEach((obj, index) => {
-        if (!found && mouseX > obj.x && mouseX < obj.x + obj.content.width && mouseY > obj.y && mouseY < obj.y + obj.content.height) {
-            isDragging = true;
-            dragStartPoint.x = mouseX - obj.x;
-            dragStartPoint.y = mouseY - obj.y;
-            currentObjectIndex = objects.length - 1 - index; // Da wir die Liste umgekehrt durchlaufen
-
-            // Bringe das ausgewählte Objekt in den Vordergrund
-            const selectedObject = objects.splice(currentObjectIndex, 1)[0];
-            objects.push(selectedObject);
-            currentObjectIndex = objects.length - 1;
-
-            found = true;
-        }
-    });
-
-    if (!found) {
-        currentObjectIndex = null;
-    }
-
+    objects[currentObjectIndex].x = mouseX - dragStartPoint.x;
+    objects[currentObjectIndex].y = mouseY - dragStartPoint.y;
     drawObjects();
+  }
 });
 
 // ... Code zum Ändern der Größe von Objekten ...
-canvas.addEventListener('mousemove', function(e) {
-    if (isDragging) {
-        const canvasRect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - canvasRect.left;
-        const mouseY = e.clientY - canvasRect.top;
-        objects[currentObjectIndex].x = mouseX - dragStartPoint.x;
-        objects[currentObjectIndex].y = mouseY - dragStartPoint.y;
-        drawObjects();
-    }
-});
-
-
-// ... Code zum Ändern der Größe von Objekten ...
-canvas.addEventListener('mouseup', function() {
-    isDragging = false;
-    resizing = false;
+canvas.addEventListener("mouseup", function () {
+  isDragging = false;
+  resizing = false;
 });
 
 // ... Code zum Ändern der Größe von Objekten ...
-canvas.addEventListener('mouseout', function() {
-    isDragging = false;
+canvas.addEventListener("mouseout", function () {
+  isDragging = false;
 });
-
 
 //TOUCH EVENTS
-canvas.addEventListener('touchstart', function(e) {
+canvas.addEventListener("touchstart", function (e) {
+  const canvasRect = canvas.getBoundingClientRect();
+  const touchX = e.touches[0].clientX - canvasRect.left;
+  const touchY = e.touches[0].clientY - canvasRect.top;
+  let found = false;
+
+  objects
+    .slice()
+    .reverse()
+    .forEach((obj, index) => {
+      if (
+        !found &&
+        touchX > obj.x &&
+        touchX < obj.x + obj.content.width &&
+        touchY > obj.y &&
+        touchY < obj.y + obj.content.height
+      ) {
+        isDragging = true;
+        dragStartPoint.x = touchX - obj.x;
+        dragStartPoint.y = touchY - obj.y;
+        currentObjectIndex = objects.length - 1 - index;
+
+        const selectedObject = objects.splice(currentObjectIndex, 1)[0];
+        objects.push(selectedObject);
+        currentObjectIndex = objects.length - 1;
+
+        found = true;
+      }
+    });
+
+  if (!found) {
+    currentObjectIndex = null;
+  }
+
+  drawObjects();
+});
+
+canvas.addEventListener("touchmove", function (e) {
+  if (isDragging) {
     const canvasRect = canvas.getBoundingClientRect();
     const touchX = e.touches[0].clientX - canvasRect.left;
     const touchY = e.touches[0].clientY - canvasRect.top;
-    let found = false;
-
-    objects.slice().reverse().forEach((obj, index) => {
-        if (!found && touchX > obj.x && touchX < obj.x + obj.content.width && touchY > obj.y && touchY < obj.y + obj.content.height) {
-            isDragging = true;
-            dragStartPoint.x = touchX - obj.x;
-            dragStartPoint.y = touchY - obj.y;
-            currentObjectIndex = objects.length - 1 - index;
-
-            const selectedObject = objects.splice(currentObjectIndex, 1)[0];
-            objects.push(selectedObject);
-            currentObjectIndex = objects.length - 1;
-
-            found = true;
-        }
-    });
-
-    if (!found) {
-        currentObjectIndex = null;
-    }
-
+    objects[currentObjectIndex].x = touchX - dragStartPoint.x;
+    objects[currentObjectIndex].y = touchY - dragStartPoint.y;
     drawObjects();
+  }
 });
 
-canvas.addEventListener('touchmove', function(e) {
-    if (isDragging) {
-        const canvasRect = canvas.getBoundingClientRect();
-        const touchX = e.touches[0].clientX - canvasRect.left;
-        const touchY = e.touches[0].clientY - canvasRect.top;
-        objects[currentObjectIndex].x = touchX - dragStartPoint.x;
-        objects[currentObjectIndex].y = touchY - dragStartPoint.y;
-        drawObjects();
-    }
+canvas.addEventListener("touchend", function () {
+  isDragging = false;
+  resizing = false;
 });
-
-canvas.addEventListener('touchend', function() {
-    isDragging = false;
-    resizing = false;
-});
-
 
 function isNearEdge(mouseX, mouseY, obj) {
-    const edgeThreshold = 10;
-    const nearRightEdge = mouseX > obj.x + obj.content.width - edgeThreshold && mouseX < obj.x + obj.content.width;
-    const nearBottomEdge = mouseY > obj.y + obj.content.height - edgeThreshold && mouseY < obj.y + obj.content.height;
+  const edgeThreshold = 10;
+  const nearRightEdge =
+    mouseX > obj.x + obj.content.width - edgeThreshold &&
+    mouseX < obj.x + obj.content.width;
+  const nearBottomEdge =
+    mouseY > obj.y + obj.content.height - edgeThreshold &&
+    mouseY < obj.y + obj.content.height;
 
-    return nearRightEdge && nearBottomEdge;
+  return nearRightEdge && nearBottomEdge;
 }
 function getResizeDirection(mouseX, mouseY, obj) {
-    // Da wir nur die rechte untere Ecke betrachten
-    return 'bottom-right';
+  // Da wir nur die rechte untere Ecke betrachten
+  return "bottom-right";
 }
 
 function resizeObject(mouseX, mouseY, obj, direction) {
-    if (direction === 'bottom-right') {
-        const newWidth = mouseX - obj.x;
-        const newHeight = mouseY - obj.y;
+  if (direction === "bottom-right") {
+    const newWidth = mouseX - obj.x;
+    const newHeight = mouseY - obj.y;
 
-        // Stelle sicher, dass die Größe nicht kleiner als ein Minimum wird
-        obj.content.width = Math.max(newWidth, 20);
-        obj.content.height = Math.max(newHeight, 20);
-    }
+    // Stelle sicher, dass die Größe nicht kleiner als ein Minimum wird
+    obj.content.width = Math.max(newWidth, 20);
+    obj.content.height = Math.max(newHeight, 20);
+  }
 }
 
+canvas.addEventListener("wheel", function (e) {
+  if (currentObjectIndex !== null) {
+    const obj = objects[currentObjectIndex];
+    const scaleFactor = e.deltaY < 0 ? 1.1 : 0.9; // Vergrößern/Verkleinern
 
-canvas.addEventListener('wheel', function(e) {
-    if (currentObjectIndex !== null) {
-        const obj = objects[currentObjectIndex];
-        const scaleFactor = e.deltaY < 0 ? 1.1 : 0.9; // Vergrößern/Verkleinern
-
-        if (obj.type === 'image') {
-            // Direkte Skalierung für Bilder
-            obj.content.width *= scaleFactor;
-            obj.content.height *= scaleFactor;
-            obj.width = obj.content.width; // Aktualisiere die Breite
-            obj.height = obj.content.height; // Aktualisiere die Höhe
-            drawObjects();
-        } else if (obj.type === 'pdf') {
-            // Skalierung für PDF-Seiten
-            scalePdf(obj, scaleFactor, obj.pageNum);
-        }
-    }
+    // Direkte Skalierung für Bilder
+    obj.content.width *= scaleFactor;
+    obj.content.height *= scaleFactor;
+    obj.width = obj.content.width; // Aktualisiere die Breite
+    obj.height = obj.content.height; // Aktualisiere die Höhe
+    drawObjects();
+  }
 });
-
-
-function scalePdf(obj, scaleFactor) {
-    if (!obj || !obj.filepath) {
-        console.error("Kein PDF-Objekt oder Dateipfad verfügbar.");
-        return;
-    }
-
-    // Lade das PDF-Dokument basierend auf dem filepath des Objekts
-    pdfjsLib.getDocument(obj.filepath).promise.then(pdf => {
-        pdf.getPage(obj.pageNum).then(page => {
-            const viewport = page.getViewport({ scale: 1 });
-            const newScale = (obj.currentScale || 1) * scaleFactor;
-            const scaledViewport = page.getViewport({ scale: newScale });
-
-            const canvas = document.createElement('canvas');
-            canvas.width = scaledViewport.width;
-            canvas.height = scaledViewport.height;
-            const ctx = canvas.getContext('2d');
-
-            const renderContext = {
-                canvasContext: ctx,
-                viewport: scaledViewport
-            };
-
-            page.render(renderContext).promise.then(() => {
-                obj.content = canvas;
-                obj.width = canvas.width;
-                obj.height = canvas.height;
-                obj.currentScale = newScale;
-                drawObjects();
-            });
-        });
-    }).catch(error => {
-        console.error('Fehler beim Laden/Skalieren der PDF-Seite:', error);
-    });
-}
-
-
-
 
 // Whiteboard veröffentlichen und speichern im saved-Ordner
-document.getElementById('goLiveWhiteboardButton').addEventListener('click', function() {
+document
+  .getElementById("goLiveWhiteboardButton")
+  .addEventListener("click", function () {
     if (objects.length > 0) {
-        const userConfirmation = confirm("Möchtest du das aktuelle Whiteboard veröffentlichen? Dadurch wird das bisherige Whiteboard überschrieben und dieses angezeigt.");
+      const userConfirmation = confirm(
+        "Möchtest du das aktuelle Whiteboard veröffentlichen? Dadurch wird das bisherige Whiteboard überschrieben und dieses angezeigt."
+      );
 
-        if (userConfirmation) {
-            fetch('../php/copyFiles.php', { method: 'POST' })
-            .then(response => response.json())
-            .then(data => console.log(data.message))
-            .catch(error => console.error('Error:', error));
-        }
+      if (userConfirmation) {
+        fetch("../php/copyFiles.php", { method: "POST" })
+          .then((response) => response.json())
+          .then((data) => console.log(data.message))
+          .catch((error) => console.error("Error:", error));
+      }
     } else {
-        alert("Es gibt keine Objekte auf dem Whiteboard, die veröffentlicht werden können.");
+      alert(
+        "Es gibt keine Objekte auf dem Whiteboard, die veröffentlicht werden können."
+      );
     }
-});
-
-
+  });
 
 //Einzelne Elemente löschen vom Canvas, aus der JSON und aus dem Ordner wenn keine Elemente mehr vorhanden sind
-canvas.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
+canvas.addEventListener("contextmenu", function (e) {
+  e.preventDefault();
 
-    if (currentObjectIndex !== null) {
-        // Entferne das Objekt vom Canvas
-        objects.splice(currentObjectIndex, 1);
+  if (currentObjectIndex !== null) {
+    // Entferne das Objekt vom Canvas
+    objects.splice(currentObjectIndex, 1);
 
-        // Sende Anfrage zum Entfernen des Objekts aus der JSON-Datei
-        removeFromJson(currentObjectIndex);
+    // Sende Anfrage zum Entfernen des Objekts aus der JSON-Datei
+    removeFromJson(currentObjectIndex);
 
-        // Setze die Markierung zurück und zeichne das Canvas neu
-        currentObjectIndex = null;
-        drawObjects();
-    }
+    // Setze die Markierung zurück und zeichne das Canvas neu
+    currentObjectIndex = null;
+    drawObjects();
+  }
 });
 
 function removeFromJson(index) {
-    console.log("Removed from JSON");
-    fetch('/php/removeFromJson.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ index: index })
-    })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error('Error:', error));
+  console.log("Removed from JSON");
+  fetch("/php/removeFromJson.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ index: index }),
+  })
+    .then((response) => response.json())
+    .then((data) => console.log(data))
+    .catch((error) => console.error("Error:", error));
 }
 
 // Laden von Bildern und PDFs aus JSON
-window.onload = function() {
-    fetch('/php/loadJson.php')
-    .then(response => response.json())
-    .then(data => {
-        data.forEach(item => {
-            if (item.type === 'image') {
-                loadAndAddImageFromJson(item);
-            } else if (item.type === 'pdf') {
-                loadAndAddPdfFromJson(item);
-            }
-        });
+window.onload = function () {
+  fetch("/php/loadJson.php")
+    .then((response) => response.json())
+    .then((data) => {
+      data.forEach((item) => {
+        loadAndAddImageFromJson(item);
+      });
     })
-    .catch(error => console.error('Error:', error));
+    .catch((error) => console.error("Error:", error));
 };
 
 function loadAndAddImageFromJson(item) {
-    const img = new Image();
-    img.onload = function() {
-        img.width = item.width;
-        img.height = item.height;
-        objects.push({
-            type: 'image',
-            content: img,
-            x: item.x,
-            y: item.y,
-            width: item.width,
-            height: item.height,
-            filepath: item.filepath
-        });
-        drawObjects();
-    };
-    img.src = item.filepath;
-}
-
-function loadAndAddPdfFromJson(item) {
-    fetch(item.filepath)
-    .then(response => response.arrayBuffer())
-    .then(buffer => {
-        const typedarray = new Uint8Array(buffer);
-        pdfjsLib.getDocument({ data: typedarray }).promise.then(pdf => {
-            renderPdfPageFromJson(pdf, item);
-        });
-    })
-    .catch(error => console.error('Error beim Laden der PDF:', error));
-}
-
-function renderPdfPageFromJson(pdf, item) {
-    pdf.getPage(item.page).then(page => {
-        const viewport = page.getViewport({ scale: 1 });
-        const scale = item.width / viewport.width;
-        const scaledViewport = page.getViewport({ scale: scale });
-
-        const canvas = document.createElement('canvas');
-        canvas.width = scaledViewport.width;
-        canvas.height = scaledViewport.height;
-        const ctx = canvas.getContext('2d');
-
-        const renderContext = {
-            canvasContext: ctx,
-            viewport: scaledViewport
-        };
-
-        page.render(renderContext).promise.then(() => {
-            const obj = {
-                type: 'pdf',
-                content: canvas,
-                x: item.x,
-                y: item.y,
-                width: canvas.width,
-                height: canvas.height,
-                pageNum: item.page,
-                filepath: item.filepath
-            };
-            objects.push(obj);
-            drawObjects();
-        });
-    }).catch(error => {
-        console.error('Fehler beim Rendern der PDF-Seite:', error);
+  const img = new Image();
+  img.onload = function () {
+    img.width = item.width;
+    img.height = item.height;
+    objects.push({
+      type: "image",
+      content: img,
+      x: item.x,
+      y: item.y,
+      width: item.width,
+      height: item.height,
+      filepath: item.filepath,
     });
+    drawObjects();
+  };
+  img.src = item.filepath;
 }
