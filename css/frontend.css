@@ -68,10 +68,12 @@ p {
  
 #main-canvas {
   border: 1px solid black;
+  width: 3277px; /* 80% der Gesamtbreite für das Canvas */
+  height: 2160px;
 }
  
 #right-div {
-  width: 20vw;
+  width: 819px;
   min-height: 0;
   background-color: #5ea6df;
   padding: 1vh 1vw;
