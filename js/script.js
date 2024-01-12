@@ -109,6 +109,7 @@ function drawObjects(filepath) {
   console.log("Gezeichnet");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   objects.forEach((obj, index) => {
+    
     // Setze Schatten nur für PDF-Objekte
     if (obj.type === "pdf") {
       ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
