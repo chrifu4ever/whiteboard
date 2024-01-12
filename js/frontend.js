@@ -25,10 +25,10 @@ function drawObjects(filepath) {
     let isSvg = obj.filepath.endsWith(".svg");
 
     // Schatten für alle Objekte und weiße Hintergründe
-    ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+    ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
     ctx.shadowBlur = 10;
-    ctx.shadowOffsetX = 5;
-    ctx.shadowOffsetY = 5;
+    ctx.shadowOffsetX = 15;
+    ctx.shadowOffsetY = 15;
 
     // Zeichne weißen Hintergrund für SVG-Objekte
     if (isSvg) {
@@ -48,10 +48,10 @@ function drawObjects(filepath) {
     ctx.drawImage(obj.content, newX, newY, newWidth, newHeight);
 
     // Wende den Schatten erneut an für nachfolgende Objekte
-    ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+    ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
     ctx.shadowBlur = 10;
-    ctx.shadowOffsetX = 5;
-    ctx.shadowOffsetY = 5;
+    ctx.shadowOffsetX = 15;
+    ctx.shadowOffsetY = 15;
 
     // Zeichne eine Umrandung, wenn das Objekt ausgewählt ist
     if (currentObjectIndex === index) {

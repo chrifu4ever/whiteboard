@@ -68,9 +68,11 @@ p {
 }
  
 #main-canvas {
-  border: 1px solid black;
   width: 3277px; /* 80% der Gesamtbreite für das Canvas */
   height: 2160px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.9), rgba(0, 0, 0, 0.9)), 
+    url(../frontend/img/background.webp);	 
 }
  
 #right-div {

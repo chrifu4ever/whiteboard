@@ -109,22 +109,28 @@ function drawObjects(filepath) {
   console.log("Gezeichnet");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   objects.forEach((obj, index) => {
-    
-    // Setze Schatten nur für PDF-Objekte
-    if (obj.type === "pdf") {
-      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetX = 5;
-      ctx.shadowOffsetY = 5;
-    } else {
-      // Kein Schatten für andere Objekte
+    // Prüfe, ob es sich um eine SVG-Datei handelt
+    let isSvg = obj.filepath.endsWith(".svg");
+
+    // Schatten für alle Objekte
+    ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetX = 5;
+    ctx.shadowOffsetY = 5;
+
+    // Zeichne weißen Hintergrund für SVG-Objekte
+    if (isSvg) {
+      ctx.fillStyle = "white";
+      ctx.fillRect(obj.x, obj.y, obj.content.width, obj.content.height);
+    }
+
+    // Entferne Schatten von SVG-Objekt, aber lasse ihn auf dem Hintergrund
+    if (isSvg) {
       ctx.shadowColor = "transparent";
       ctx.shadowBlur = 0;
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 0;
     }
-
-    // Zeichne das Objekt
     ctx.drawImage(
       obj.content,
       obj.x,
@@ -132,6 +138,11 @@ function drawObjects(filepath) {
       obj.content.width,
       obj.content.height
     );
+    // Wende den Schatten erneut an für nachfolgende Objekte
+    ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetX = 15;
+    ctx.shadowOffsetY = 15;
 
     // Zeichne eine Umrandung, wenn das Objekt ausgewählt ist
     if (currentObjectIndex === index) {

@@ -21,7 +21,7 @@
     </div>
 
     <p><a href="../frontend/index.php" target="_blank">Aktuelles Whiteboard ansehen</a></p>
-    <script src="../js/script.js"></script>
+    <script src="../js/backend.js"></script>
 </body>
 
 </html>

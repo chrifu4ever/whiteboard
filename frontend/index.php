@@ -13,7 +13,7 @@
 
     <div id="main-div">
         <div id="canvas-container">
-            <canvas id="main-canvas" width="3277" height="2160" style="background-color: #ebebeb;"></canvas>
+            <canvas id="main-canvas" width="3277" height="2160"></canvas>
         </div>
 
         <div id="right-div">
