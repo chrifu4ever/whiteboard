@@ -2,33 +2,33 @@
   font-family: "Montserrat Regular";
   src: url("../frontend/fonts/Montserrat-Regular.ttf") format("truetype");
 }
- 
+
 @font-face {
   font-family: "Montserrat Bold";
   src: url("../frontend/fonts/Montserrat-Bold.ttf") format("truetype");
 }
- 
+
 h1,
 h2 {
   font-family: "Montserrat Bold", sans-serif;
   text-align: center;
   text-decoration: underline;
   font-size: 3em;
+  margin: 0 0 20px 0;
 }
- 
+
 h3 {
   font-size: 1.2em;
   text-decoration: underline;
 }
- 
- 
+
 html,
 body {
   margin: 0;
   padding: 0;
   overflow: hidden;
 }
- 
+
 body {
   font-family: "Montserrat Regular", sans-serif;
   display: flex;
@@ -36,9 +36,10 @@ body {
   height: 100vh;
   margin: 0;
 }
- 
+
 p {
-  font-size: 2em;
+  font-size: 1.3em;
+  margin: 10px 0;
 }
 #main-div {
   flex: 1;
@@ -47,7 +48,7 @@ p {
   width: 100%;
   height: 100%;
 }
- 
+
 #header-div {
   width: 100%;
   height: 10vh;
@@ -55,37 +56,35 @@ p {
   justify-content: center;
   align-items: center;
 }
- 
+
 .logo {
   width: auto;
   box-shadow: 10px 10px 20px gray;
   margin: 1vh 1vw;
 }
- 
+
 #canvas-container {
   display: flex;
   min-width: 80vw;
 }
- 
+
 #main-canvas {
-  width: 3277px; /* 80% der Gesamtbreite für das Canvas */
+  width: 3446px; /* 80% der Gesamtbreite für das Canvas */
   height: 2160px;
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.9), rgba(0, 0, 0, 0.9)), 
-    url(../frontend/img/background.webp);	 
+  background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(0, 0, 0, 0.9)),
+    url(../frontend/img/background.webp);
 }
- 
+
 #right-div {
-  width: 819px;
+  width: 650px;
   min-height: 0;
   background-color: #5ea6df;
-  padding: 1vh 1vw;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   /*display: none;*/
 }
- 
+
 #birthday-div,
 #information_div {
   flex: 1;
@@ -93,40 +92,52 @@ p {
   margin: 1vh 1vw;
   padding: 1vh 1vw;
   box-sizing: border-box;
-  min-height: 35vh;
   box-shadow: 10px 10px 20px gray;
 }
- 
+
 .canvas_pics {
   position: absolute;
   cursor: grab;
   box-shadow: 10px 10px 20px lightgrey;
 }
- 
-.birthday_person {
+
+.person {
   display: flex;
   align-items: center;
+  flex-direction: column;
+  text-align: center;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  width: 50%;
 }
- 
-.birthday_person img {
+
+.person img {
   width: 8em;
   height: 8em;
   object-fit: cover;
-  margin-right: 1em;
-}
  
+}
+
 .text {
   font-size: 1em;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
- 
+
 #screenSizeInfoDiv {
   position: absolute;
-  width: 200px;
-  height: 50px;
+  margin: 10px;
   background-color: red;
   z-index: 999;
   color: white;
+}
+
+
+.person_flex {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 10px;
 }
