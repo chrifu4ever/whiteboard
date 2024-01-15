@@ -12,8 +12,6 @@ if (isset($_POST['id']) && isset($_POST['data'])) {
               Nachname = ?, 
               Abteilung = ?, 
               Geburtsdatum = ?, 
-              Eintrittsdatum = ?, 
-              Austrittsdatum = ? 
               WHERE PersID = ?";
 
     $stmt = $db->connect()->prepare($query);
@@ -22,8 +20,6 @@ if (isset($_POST['id']) && isset($_POST['data'])) {
         $updatedData['Nachname'], 
         $updatedData['Abteilung'], 
         $updatedData['Geburtsdatum'], 
-        $updatedData['Eintrittsdatum'], 
-        $updatedData['Austrittsdatum'], 
         $persID
     );
 

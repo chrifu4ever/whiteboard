@@ -2,7 +2,7 @@
 
 class ConnectDB
 {
-    private $server = "172.23.0.2";
+    private $server = "172.21.0.3";
     private $username = "root";
     private $password = "einSehrGutesPasswort123";
     private $database = "sidler_db";
@@ -25,7 +25,7 @@ class ConnectDB
             die("Connection failed: " . $conn->connect_error);
         }
 
-        $query = "SELECT * FROM Personal"; // Ersetze 'deine_tabelle' mit dem Namen deiner Tabelle
+        $query = "SELECT * FROM Personal";
         $result = $conn->query($query);
 
         $entries = [];
