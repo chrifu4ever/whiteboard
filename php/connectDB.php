@@ -84,6 +84,68 @@ class ConnectDB
     }
 
 
+    public function getTodaysBirthdays() {
+        $conn = $this->connect();
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $today = date('Y-m-d');
+        $query = "SELECT * FROM Personal WHERE DATE_FORMAT(Geburtsdatum, '%m-%d') = DATE_FORMAT('$today', '%m-%d')";
+
+        $result = $conn->query($query);
+        $birthdays = [];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $birthdays[] = $row;
+            }
+        }
+
+        $conn->close();
+        return $birthdays;
+    }
+
+    public function getLeavingPerson() {
+        $conn = $this->connect();
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $query = "SELECT * FROM Personal WHERE CURDATE() BETWEEN DATE_SUB(Austrittsdatum, INTERVAL 10 DAY) AND DATE_ADD(Austrittsdatum, INTERVAL 10 DAY)";
+
+        $result = $conn->query($query);
+        $leavingPersons = [];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $leavingPersons[] = $row;
+            }
+        }
+
+        $conn->close();
+        return $leavingPersons;
+    }
+
+    public function getJoiningPerson() {
+        $conn = $this->connect();
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $query = "SELECT * FROM Personal WHERE CURDATE() BETWEEN DATE_SUB(Eintrittsdatum, INTERVAL 30 DAY) AND DATE_ADD(Eintrittsdatum, INTERVAL 10 DAY)";
+
+        $result = $conn->query($query);
+        $joiningPersons = [];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $joiningPersons[] = $row;
+            }
+        }
+
+        $conn->close();
+        return $joiningPersons;
+    }
+
+
 }
 
 ?>

@@ -17,7 +17,7 @@ h2 {
 }
  
 h3 {
-  font-size: 2em;
+  font-size: 1.2em;
   text-decoration: underline;
 }
  
@@ -87,7 +87,7 @@ p {
 }
  
 #birthday-div,
-#other-div {
+#information_div {
   flex: 1;
   background-color: #ffffff;
   margin: 1vh 1vw;

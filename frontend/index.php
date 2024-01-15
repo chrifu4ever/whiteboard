@@ -1,3 +1,11 @@
+<?php
+require_once('../php/connectDB.php');
+$db = new ConnectDB();
+$todaysBirthdays = $db->getTodaysBirthdays();
+$leavingPerson = $db->getLeavingPerson();
+$joiningPerson = $db->getJoiningPerson();
+?>
+
 <!DOCTYPE html>
 <html lang="de">
 
@@ -6,7 +14,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sidler Transport Whiteboard</title>
     <link rel="stylesheet" href="../css/frontend.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 
 <body>
@@ -20,45 +27,77 @@
             <img class="logo" src="img/sidler_transporte-Logo_ohne Rahmen.png">
             <div id="birthday-div">
                 <h2>Geburtstage</h2>
-                <p>Wir wünschen alles Gute zum Geburtstag</p>
-                <div class="birthday_person">
-                    <img src="img/b7975b2684.jpg">
-                    <div class="text">
-                        <p>Vorname Nachname<br>
-                            01.01.2023</p>
-                    </div>
-                </div>
-                <div class="birthday_person">
-                    <img src="img/b7975b2684.jpg">
-                    <div class="text">
-                        <p>Vorname Nachname<br>
-                            01.01.2023</p>
-                    </div>
-                </div>
-                <div class="birthday_person">
-                    <img src="img/b7975b2684.jpg">
-                    <div class="text">
-                        <p>Vorname Nachname<br>
-                            01.01.2023</p>
-                    </div>
-                </div>
-
-
+                <?php if (count($todaysBirthdays) > 0): ?>
+                    <p>Wir gratulieren herzlich zum Geburtstag und wünschen alles Gute:</p>
+                    <?php foreach ($todaysBirthdays as $person): ?>
+                        <div class="birthday_person">
+                            <img class="personal_pic" src="../personal/personalbilder/<?php echo htmlspecialchars($person['Foto']); ?>">
+                            <div class="personal_info">
+                                <p class="personal_name">
+                                    <?php echo htmlspecialchars($person['Vorname']); ?>
+                                    <?php echo htmlspecialchars($person['Nachname']); ?><br>
+                                    <b><?php echo htmlspecialchars($person['Abteilung']); ?></b>
+                                </p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p>Heute hat niemand Geburtstag.</p>
+                <?php endif; ?>
             </div>
-            <div id="other-div">
+            <div id="information_div">
                 <h2>Ein- & Austritte</h2>
                 <p>Gerne informieren wir euch über die aktuellen Ein- & Austritte:</p>
-                <h3><b>Eintritt per 01.11.2023</b></h3>
-                <div id="screenSizeInfoDiv"></div>
-            </div>
+
+                <?php if (count($leavingPerson) > 0): ?>
+                    <?php
+                    $firstDayNextMonth = date('01.m.Y', strtotime('first day of next month'));
+                    ?>
+                    <h3><b>Austritt per <?php echo $firstDayNextMonth; ?></b></h3>
+
+                    <?php foreach ($leavingPerson as $person): ?>
+                        <div class="birthday_person">
+                            <img class="personal_pic" src="../personal/personalbilder/<?php echo htmlspecialchars($person['Foto']); ?>">
+                            <div class="personal_info">
+                                <p class="personal_name">
+                                    <?php echo htmlspecialchars($person['Vorname']); ?>
+                                    <?php echo htmlspecialchars($person['Nachname']); ?><br>
+                                    <b><?php echo htmlspecialchars($person['Abteilung']); ?></b>
+</p>
+</div>
+</div>
+<?php endforeach; ?>
+<p>Wir danken euch für die Zusammenarbeit und wünschen euch für die Zukunft alles Gute.</p>
+<?php else: ?>
+<!-- Optionaler Code für den Fall, dass keine Austritte anstehen -->
+<?php endif; ?>
+<?php if (count($joiningPerson) > 0): ?>
+                <?php
+                $firstDayNextMonth = date('01.m.Y', strtotime('first day of next month'));
+                ?>
+                <h3><b>Eintritt per <?php echo $firstDayNextMonth; ?></b></h3>
+
+                <?php foreach ($joiningPerson as $person): ?>
+                    <div class="birthday_person">
+                        <img class="personal_pic" src="../personal/personalbilder/<?php echo htmlspecialchars($person['Foto']); ?>">
+                        <div class="personal_info">
+                            <p class="personal_name">
+                                <?php echo htmlspecialchars($person['Vorname']); ?>
+                                <?php echo htmlspecialchars($person['Nachname']); ?><br>
+                                <b><?php echo htmlspecialchars($person['Abteilung']); ?></b>
+                            </p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+                <p>Herzlich willkommen im Team! Wir freuen uns auf die Zusammenarbeit.</p>
+            <?php else: ?>
+                <!-- Optionaler Code für den Fall, dass keine Eintritte anstehen -->
+            <?php endif; ?>
+			        <div id="screenSizeInfoDiv"></div>
+
         </div>
-    </div>
+        </div>
+</div>
 
-    
-
-    <script src="../js/frontend.js"></script>
-
-
-</body>
-
+<script src="../js/frontend.js"></script></body>
 </html>
