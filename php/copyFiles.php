@@ -5,8 +5,18 @@ $sourceDir = '../files/';
 $targetDir = '../files/saved/';
 
 // Erstelle das Zielverzeichnis, falls es nicht existiert
-if (!file_exists($targetDir)) {
+/* if (!file_exists($targetDir)) {
     mkdir($targetDir, 0777, true);
+} */
+
+// Lösche alle Dateien im Zielverzeichnis
+if (is_dir($targetDir)) {
+    $files = glob($targetDir . '*', GLOB_MARK);
+    foreach ($files as $file) {
+        unlink($file);
+    }
+} else {
+    mkdir($targetDir, 0755, true);
 }
 
 // Kopiere alle Dateien aus dem Quellverzeichnis in das Zielverzeichnis

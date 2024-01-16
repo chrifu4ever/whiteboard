@@ -5,7 +5,7 @@ function convertPdfToSvg($pdfFilePath, $outputDir) {
         $svgFile = $outputDir . pathinfo($pdfFilePath, PATHINFO_FILENAME) . "_$i.svg";
         // Beachten Sie die Änderung hier: ($i + 1) wird außerhalb des Strings berechnet
         $command = "pdf2svg '{$pdfFilePath}' '{$svgFile}' " . ($i + 1);
-        exec($command, $output, $return_var);
+        shell_exec($command, $output, $return_var);
 
         if ($return_var === 0) {
             $svgFiles[] = $svgFile;
