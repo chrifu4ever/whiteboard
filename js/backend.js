@@ -333,6 +333,7 @@ canvas.addEventListener("wheel", function (e) {
     obj.content.height *= scaleFactor;
     obj.width = obj.content.width; // Aktualisiere die Breite
     obj.height = obj.content.height; // Aktualisiere die Höhe
+
     drawObjects();
   }
 });
@@ -347,7 +348,7 @@ document
       );
 
       if (userConfirmation) {
-        fetch("../php/copyFiles.php", { method: "POST" })
+        fetch("/php/copyFiles.php", { method: "POST" })
           .then((response) => response.json())
           .then((data) => console.log(data.message))
           .catch((error) => console.error("Error:", error));
@@ -358,6 +359,9 @@ document
       );
     }
   });
+
+
+
 
 //Einzelne Elemente löschen vom Canvas, aus der JSON und aus dem Ordner wenn keine Elemente mehr vorhanden sind
 canvas.addEventListener("contextmenu", function (e) {

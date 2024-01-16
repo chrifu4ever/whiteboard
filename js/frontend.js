@@ -262,12 +262,11 @@ function loadAndAddImageFromJson(item) {
   img.src = item.filepath;
 }
 
-/* // Funktion, um das Frontend neu zu laden
+// Funktion, um das Frontend neu zu laden
 function reloadFrontend() {
- // window.location.reload();
+  window.location.reload();
   console.log("Frontend neu geladen");
 }
 
 // Aktualisierung alle 10 Sekunden (10000 Millisekunden)
-//setInterval(reloadFrontend, 180000);
- */
+setInterval(reloadFrontend, 180000);

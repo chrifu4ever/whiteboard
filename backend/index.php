@@ -18,6 +18,7 @@
     </div>
     <div id="canvas-container">
     <canvas id="main-canvas" width="1638" height="1080"></canvas>
+    <p id="warning_message"></p>
     </div>
 
     <p><a href="../frontend/index.php" target="_blank">Aktuelles Whiteboard ansehen</a></p>
