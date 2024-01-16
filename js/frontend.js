@@ -270,3 +270,23 @@ function reloadFrontend() {
 
 // Aktualisierung alle 10 Sekunden (10000 Millisekunden)
 setInterval(reloadFrontend, 180000);
+
+
+//Mauszeiger ausblenden nach 10Sekunden Inaktivität im Frontendlet mouseInactivityTimer = null;
+let mouseInactivityTimer = null;
+
+function hideCursor() {
+    document.body.style.cursor = 'none';
+}
+
+function resetCursorInactivityTimer() {
+    document.body.style.cursor = 'default';
+    clearTimeout(mouseInactivityTimer);
+    mouseInactivityTimer = setTimeout(hideCursor, 10000); // 10 Sekunden Inaktivität
+}
+
+// Event Listener für Mausbewegungen
+document.addEventListener('mousemove', resetCursorInactivityTimer);
+
+// Initialisieren des Timers beim Laden der Seite
+resetCursorInactivityTimer();
