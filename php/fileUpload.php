@@ -3,21 +3,25 @@ include 'convertPdfToSvg.php'; // Pfad zur convertPdfToSvg.php
 
 // Zielpfad definieren
 $normalDir = "../files/";
-$tempDir = "../files/temp/";
 
 // Stelle sicher, dass die Datei hochgeladen wurde
 if (isset($_FILES['file']['name'])) {
-    $filename = basename($_FILES['file']['name']);
-    $fileType = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    $targetFilePath = ($fileType === 'pdf') ? $tempDir . $filename : $normalDir . $filename;
+    $originalFilename = basename($_FILES['file']['name']);
+    $fileType = $_FILES['file']['type'];
+
+    // Bereinige den Dateinamen
+    $filename = preg_replace("/[^a-zA-Z0-9\.\-\_]/", "", $originalFilename);
+
+    // Bestimme den Ziel-Dateipfad
+    $targetFilePath = $normalDir . $filename;
 
     // Versuche, die Datei zu speichern
     if (move_uploaded_file($_FILES['file']['tmp_name'], $targetFilePath)) {
-        if ($fileType === 'pdf') {
+        if ($fileType === 'application/pdf') {
             // Konvertiere PDF in SVG
             $svgFiles = convertPdfToSvg($targetFilePath, $normalDir);
 
-            // Lösche die Original-PDF im temp-Ordner
+            // Lösche die Original-PDF-Datei
             unlink($targetFilePath);
 
             // Rückgabe der SVG-Dateipfade

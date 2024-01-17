@@ -8,34 +8,34 @@ let dragStartPoint = {};
 let currentObjectIndex = null;
 
 // ... Code zum Laden von Bildern und PDFs ...
-document
-  .getElementById("fileInputButton")
-  .addEventListener("change", function (e) {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append("file", file);
+document.getElementById("fileInputButton").addEventListener("change", function (e) {
+  const file = e.target.files[0];
+  const formData = new FormData();
+  formData.append("file", file);
 
-    fetch("../php/fileUpload.php", {
+  fetch("../php/fileUpload.php", {
       method: "POST",
       body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (file.type.match("image.*") || file.type === "application/pdf") {
-          // Verarbeite Bild- oder SVG-Upload
+  })
+  .then((response) => response.json())
+  .then((data) => {
+      if (file.type.match("image.*")) {
+          // Verarbeite Bild-Upload
           if (data.filePath) {
-            // Für normale Bilder
-            loadAndAddImage(data.filePath);
-          } else if (data.svgFiles && data.svgFiles.length) {
-            // Für SVGs, die aus PDF konvertiert wurden
-            data.svgFiles.forEach((svgFile) => {
-              loadAndAddImage(svgFile);
-            });
+              loadAndAddImage(data.filePath);
           }
-        }
-      })
-      .catch((error) => console.error("Error:", error));
-  });
+      } else if (file.type === "application/pdf") {
+          // Verarbeite PDF-Upload
+          if (Array.isArray(data.svgFiles)) {
+              data.svgFiles.forEach((svgFile) => {
+                  loadAndAddImage(svgFile);
+              });
+          }
+      }
+  })
+  .catch((error) => console.error("Error:", error));
+});
+
 
 // Bild hochladen
 function loadAndAddImage(filePath) {
