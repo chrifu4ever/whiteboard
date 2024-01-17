@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>ALTERNATIVE BACKEND</title>
+    <title>Sidler Whiteboard Backend</title>
     <link rel="stylesheet" href="../css/backend.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
@@ -11,7 +11,7 @@
 
     <div id="menu-container">
         <input type="file" id="fileInputButton" accept="image/*,application/pdf">
-        <button id="clearCanvasButton">Clear Canvas</button>
+        <button id="clearCanvasButton">Alle Elemente entfernen</button>
         <!--  <button id="saveButton">Canvas Speichern</button> -->
         <button id="goLiveWhiteboardButton">Whiteboard veröffentlichen</button>
 

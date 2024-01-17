@@ -53,6 +53,11 @@ function drawObjects(filepath) {
     ctx.shadowOffsetX = 15;
     ctx.shadowOffsetY = 15;
 
+    // Zeichne einen 1px Rand um das Objekt
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.4)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(newX, newY, newWidth, newHeight);
+
     // Zeichne eine Umrandung, wenn das Objekt ausgewählt ist
     if (currentObjectIndex === index) {
       ctx.strokeStyle = "red";
