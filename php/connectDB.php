@@ -1,7 +1,10 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 class ConnectDB
 {
+
     private $server = "172.21.0.3";
     private $username = "root";
     private $password = "einSehrGutesPasswort123";
@@ -12,7 +15,9 @@ class ConnectDB
         $sql = new mysqli($this->server, $this->username, $this->password, $this->database);
         mysqli_set_charset($sql, "utf8");
         if ($sql->connect_errno) {
-            echo "Failed to connect to MySQL: (" . $sql->connect_errno . ") " . $sql->connect_error;
+            echo "<script>console.error('Failed to connect to MySQL: (" . $sql->connect_errno . ") " . $sql->connect_error . "');</script>";
+        } else {
+            echo "<script>console.log('MySQL connection established successfully.');</script>";
         }
 
         return $sql;
@@ -63,7 +68,8 @@ class ConnectDB
     }
 
 
-    public function getEntryById($id) {
+    public function getEntryById($id)
+    {
         $conn = $this->connect();
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
@@ -84,7 +90,8 @@ class ConnectDB
     }
 
 
-    public function getTodaysBirthdays() {
+    public function getTodaysBirthdays()
+    {
         $conn = $this->connect();
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
@@ -105,7 +112,8 @@ class ConnectDB
         return $birthdays;
     }
 
-    public function getLeavingPerson() {
+    public function getLeavingPerson()
+    {
         $conn = $this->connect();
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
@@ -125,7 +133,8 @@ class ConnectDB
         return $leavingPersons;
     }
 
-    public function getJoiningPerson() {
+    public function getJoiningPerson()
+    {
         $conn = $this->connect();
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
