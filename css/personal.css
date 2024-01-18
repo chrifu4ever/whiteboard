@@ -1,66 +1,95 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+
+/* Stil für das übergeordnete div-Element, das das Formular und den Button umfasst */
+.form-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Stil für das Suchformular innerhalb des Flex-Containers */
+.form-container form {
+    margin: 0; /* Entfernt eventuelle Standardmargen */
 }
 
 form {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 input[type="text"] {
-    padding: 10px;
-    margin-right: 5px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    width: calc(100% - 150px);
+  padding: 10px;
+  margin-right: 5px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  width: calc(100% - 150px);
 }
 
 input[type="submit"] {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.new-icon {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 input[type="submit"]:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
 
-table, th, td {
-    border: 1px solid #ddd;
+table,
+th,
+td {
+  border: 1px solid #ddd;
 }
 
-th, td {
-    text-align: left;
-    padding: 8px;
+th,
+td {
+  text-align: left;
+  padding: 8px;
 }
 
 th {
-    background-color: #007bff;
-    color: white;
+  background-color: #007bff;
+  color: white;
 }
 
 tr:nth-child(even) {
-    background-color: #f2f2f2;
+  background-color: #f2f2f2;
 }
 
 @media screen and (max-width: 600px) {
-    input[type="text"] {
-        width: 100%;
-        margin-bottom: 10px;
-    }
+  input[type="text"] {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 
-    input[type="submit"] {
-        width: 100%;
-    }
+  input[type="submit"] {
+    width: 100%;
+  }
+}
+
+.hidden {
+    display: none;
 }

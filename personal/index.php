@@ -1,4 +1,4 @@
-<?php 
+<?php
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
@@ -12,18 +12,22 @@ error_reporting(E_ALL);
     <link rel="stylesheet" href="../css/personal.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body>
     <?php
     require_once '../php/connectDB.php';
 
-    // HTML für das Suchformular
-    echo "<form method='post' action=''>"; // POST-Methode, um die Suchanfrage zu senden
+    echo "<div class='form-container'>";
+    echo "<form method='post' action=''>";
     echo "<input type='text' name='searchTerm' placeholder='Vorname oder Nachname'>";
     echo "<input type='submit' name='search' value='Suchen'>";
     echo "</form>";
-
+    echo "<button type='button' class='new-icon' onclick='createNewEntry();'><i class='fa-solid fa-user'></i> Neuer Eintrag</button>";
+    echo "</div>"; 
+    
     // Verarbeitung der Suchanfrage
     if (isset($_POST['search'])) {
         $db = new ConnectDB();
@@ -33,22 +37,22 @@ error_reporting(E_ALL);
         // Anzeigen der Ergebnisse, falls vorhanden
         if ($entries) {
             echo "<table border='1'>";
-            echo "<tr><th>PersID</th><th>Vorname</th><th>Nachname</th><th>Abteilung</th><th>Geburtsdatum</th><th>Eintrittsdatum</th><th>Austrittsdatum</th><th>Bearbeiten</th><th>Löschen</th></tr>";
-        
+            echo "<tr><th class='hidden'>PersID</th><th>Vorname</th><th>Nachname</th><th>Abteilung</th><th>Geburtsdatum</th><th>Eintrittsdatum</th><th>Austrittsdatum</th><th>Bearbeiten</th><th>Löschen</th></tr>";
+
             foreach ($entries as $entry) {
                 echo "<tr>";
-                echo "<td>" . htmlspecialchars($entry['PersID']) . "</td>";
+                echo "<td class='hidden'>" . htmlspecialchars($entry['PersID']) . "</td>";
                 echo "<td>" . htmlspecialchars($entry['Vorname']) . "</td>";
                 echo "<td>" . htmlspecialchars($entry['Nachname']) . "</td>";
                 echo "<td>" . htmlspecialchars($entry['Abteilung']) . "</td>";
-                echo "<td>" . htmlspecialchars($entry['Geburtsdatum']) . "</td>";
-                echo "<td>" . htmlspecialchars($entry['Eintrittsdatum']) . "</td>"; // Stellen Sie sicher, dass diese Zeile korrekt ist
-                echo "<td>" . htmlspecialchars($entry['Austrittsdatum']) . "</td>"; // Stellen Sie sicher, dass diese Zeile korrekt ist
+                echo "<td>" . formatGermanDate($entry['Geburtsdatum']) . "</td>";
+                echo "<td>" . formatGermanDate($entry['Eintrittsdatum']) . "</td>";
+                echo "<td>" . formatGermanDate($entry['Austrittsdatum']) . "</td>";
                 echo "<td class='action'><i class='fa-solid fa-pen edit-icon' data-persid='" . $entry['PersID'] . "'></i></td>";
-                echo "<td><i class='fa-solid fa-trash'></i></td>";
+                echo "<td><i class='fa-solid fa-trash delete-icon'></i></td>";
                 echo "</tr>";
             }
-        
+
             echo "</table>";
         } else {
             echo "Keine Einträge gefunden.";
@@ -132,6 +136,15 @@ error_reporting(E_ALL);
         }
 
         exit; // Verhindert, dass der restliche HTML-Code ausgeführt wird
+    }
+    function formatGermanDate($dateString)
+    {
+        if ($dateString) {
+            $date = new DateTime($dateString);
+            return $date->format('d.m.Y');
+        } else {
+            return "";
+        }
     }
 
     ?>
