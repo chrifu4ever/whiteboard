@@ -20,14 +20,15 @@ error_reporting(E_ALL);
     <?php
     require_once '../php/connectDB.php';
 
-    echo "<div class='form-container'>";
-    echo "<form method='post' action=''>";
+
+    echo "<form method='post' class='form-container' action=''>";
     echo "<input type='text' name='searchTerm' placeholder='Vorname oder Nachname'>";
-    echo "<input type='submit' name='search' value='Suchen'>";
+    echo "<input type='submit' name='search' value='Suchen'></input>";
+    echo "<button type='button' class='new-icon' onclick='createNewEmployee();'><i class='fa-solid fa-user'></i> Neuer Eintrag</button>";
+
     echo "</form>";
-    echo "<button type='button' class='new-icon' onclick='createNewEntry();'><i class='fa-solid fa-user'></i> Neuer Eintrag</button>";
-    echo "</div>"; 
-    
+
+
     // Verarbeitung der Suchanfrage
     if (isset($_POST['search'])) {
         $db = new ConnectDB();
@@ -146,6 +147,35 @@ error_reporting(E_ALL);
             return "";
         }
     }
+
+    //Modal für neuen Mitarbeiter
+    echo "
+    <div id='newEmployeeModal' class='modal'>
+        <div class='modal-content'>
+            <span class='close'>&times;</span>
+            <h2>Neuen Mitarbeiter anlegen</h2>
+            <form id='newEmployeeForm'>
+                <label for='vorname'>Vorname:</label>
+                <input type='text' id='vorname' name='vorname'><br>
+
+                <label for='nachname'>Nachname:</label>
+                <input type='text' id='nachname' name='nachname'><br>
+
+                <label for='geburtsdatum'>Geburtsdatum:</label>
+                <input type='date' id='geburtsdatum' name='geburtsdatum'><br>
+
+                <label for='eintrittsdatum'>Eintrittsdatum:</label>
+                <input type='date' id='eintrittsdatum' name='eintrittsdatum'><br>
+
+                <label for='bild'>Mitarbeiterfoto hochladen:</label>
+                <input type='file' id='bild' name='bild'><br>
+
+                <input type='submit' value='Speichern'>
+            </form>
+        </div>
+    </div>
+    ";
+
 
     ?>
 

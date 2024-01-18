@@ -139,3 +139,24 @@ function deleteEntry(persId) {
     }
   });
 }
+
+
+function createNewEmployee() {
+    var modal = document.getElementById('newEmployeeModal');
+    var span = document.getElementsByClassName('close')[0];
+
+    // Modal öffnen
+    modal.style.display = 'block';
+
+    // Modal schließen, wenn auf das (x) geklickt wird
+    span.onclick = function() {
+        modal.style.display = 'none';
+    }
+
+    // Modal schließen, wenn außerhalb des Modals geklickt wird
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+}
