@@ -161,3 +161,38 @@ tr:nth-child(even) {
 #newEmployeeForm input[type='submit']:hover {
     background-color: #45a049;
 }
+
+#newEmployeeForm input[type='file'] {
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #fafafa;
+    border-radius: 4px;
+    width: calc(100% - 22px);
+    box-sizing: border-box;
+}
+
+/* Optional: Stil für den Label des Bild-Uploads */
+#newEmployeeForm label[for='bild'] {
+    font-weight: bold;
+    display: block; /* Stellt sicher, dass der Label über dem Eingabefeld steht */
+    margin-top: 20px;
+}
+
+.image-preview {
+    margin-top: 10px;
+    width: 100%; /* oder eine bestimmte Breite, je nach Bedarf */
+    height: 100px; /* oder eine bestimmte Höhe */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Verhindert das Überlaufen des Bildes */
+    background-color: #fafafa;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+}

@@ -160,3 +160,21 @@ function createNewEmployee() {
         }
     }
 }
+
+
+document.getElementById('bild').addEventListener('change', function(event) {
+    console.log("pic changed");
+    var preview = document.getElementById('imagePreview');
+    preview.innerHTML = ''; // Löscht vorherige Vorschauen
+
+    var reader = new FileReader();
+    reader.onload = function() {
+        var img = new Image();
+        img.src = reader.result;
+        preview.appendChild(img);
+    };
+
+    if (this.files[0]) {
+        reader.readAsDataURL(this.files[0]);
+    }
+});

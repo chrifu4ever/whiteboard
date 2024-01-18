@@ -154,7 +154,7 @@ error_reporting(E_ALL);
         <div class='modal-content'>
             <span class='close'>&times;</span>
             <h2>Neuen Mitarbeiter anlegen</h2>
-            <form id='newEmployeeForm'>
+            <form id='newEmployeeForm' enctype='multipart/form-data'>
                 <label for='vorname'>Vorname:</label>
                 <input type='text' id='vorname' name='vorname'><br>
 
@@ -167,9 +167,9 @@ error_reporting(E_ALL);
                 <label for='eintrittsdatum'>Eintrittsdatum:</label>
                 <input type='date' id='eintrittsdatum' name='eintrittsdatum'><br>
 
-                <label for='bild'>Mitarbeiterfoto hochladen:</label>
-                <input type='file' id='bild' name='bild'><br>
-
+                <label for='bild'>Bild hochladen:</label>
+                <input type='file' id='bild' name='bild' accept='image/*'><br>
+                <div id='imagePreview' class='image-preview'></div>
                 <input type='submit' value='Speichern'>
             </form>
         </div>
