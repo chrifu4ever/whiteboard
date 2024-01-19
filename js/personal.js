@@ -126,7 +126,7 @@ function deleteEntry(persId) {
         type: "post",
         data: { id: persId },
         success: function (response) {
-            window.location.reload(); // Seite neu laden
+          window.location.reload(); // Seite neu laden
         },
         error: function (xhr, status, error) {
           console.error("Löschen fehlgeschlagen: ", error);
@@ -178,10 +178,6 @@ document
     e.preventDefault();
 
     var formData = new FormData(this);
-
-    // Zum Anzeigen der FormData-Inhalte in der Konsole
-    for (var pair of formData.entries()) {
-    }
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "../php/newEmployeeEntry.php", true);

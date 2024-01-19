@@ -99,7 +99,7 @@ $lastDayNextMonth = date('t.m.Y', strtotime('last day of next month'));
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    <p>Wir danken euch für die Zusammenarbeit und wünschen euch für die Zukunft alles Gute.</p>
+                    <p>Wir danken herzlich für die Zusammenarbeit und wünschen für die Zukunft alles Gute.</p>
                 <?php else: ?>
                     <p>Keine Austritte</p>
                 <?php endif; ?>

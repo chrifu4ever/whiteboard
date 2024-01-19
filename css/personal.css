@@ -28,14 +28,14 @@ input[type="text"] {
   margin-right: 5px;
   border-radius: 5px;
   border: 1px solid #ddd;
-  width: calc(100% - 150px);
-  flex-grow: 2;
+  flex-grow: 5;
   width: auto;
 }
 
 input[type="submit"] {
   padding: 10px 20px;
   background-color: #007bff;
+  font-size: 20px;
   color: white;
   border: none;
   border-radius: 5px;
@@ -47,6 +47,7 @@ input[type="submit"] {
 .new-icon {
   padding: 10px 20px;
   background-color: #28a745;
+  font-size: 20px;
   color: white;
   border: none;
   border-radius: 5px;
@@ -102,97 +103,109 @@ tr:nth-child(even) {
 }
 
 
+
+
 /* Modal-Stil Neuer Mitarbeiter */
 .modal {
-    display: none; 
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-    z-index: 1000; /* Stellt sicher, dass das Modal über anderen Elementen angezeigt wird */
+  display: none; 
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
 }
 
 .modal-content {
-    background-color: #fefefe;
-    margin: 5% auto; /* Zentriert das Modal besser auf der Seite */
-    padding: 20px;
-    border-radius: 8px; /* Abgerundete Ecken für das Modal */
-    width: 50%; /* Reduzierte Breite des Modal-Inhalts */
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* Schatten für das Modal */
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 40%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
 }
 
 .close:hover,
 .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-/* Formular-Stil */
 #newEmployeeForm label {
-    margin-top: 10px;
-    font-weight: bold;
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #333;
 }
 
-#newEmployeeForm input[type='text'], #newEmployeeForm input[type='date'] {
-    padding: 10px;
-    margin-top: 5px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    width: calc(100% - 22px); /* 100% Breite minus Padding und Border */
+#newEmployeeForm input[type='text'],
+#newEmployeeForm input[type='date'],
+#newEmployeeForm select {
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#newEmployeeForm select {
+  cursor: pointer;
 }
 
 #newEmployeeForm input[type='submit'] {
-    margin-top: 20px;
-    width: 100%; /* Vollständige Breite für den Submit-Button */
-    box-sizing: border-box; /* Stellt sicher, dass Padding und Border in der Breite enthalten sind */
+  margin-top: 20px;
+  padding: 12px 20px;
+  font-size: 25px;
+  background-color: #28a745; /* Grüner Farbton */
+  color: white;
+  font-weight: bold; /* Schrift fetter machen */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease; /* Animation beim Hovern hinzufügen */
 }
 
 #newEmployeeForm input[type='submit']:hover {
-    background-color: #45a049;
+  background-color: #218838; /* Dunklerer Grünton beim Hovern */
 }
 
 #newEmployeeForm input[type='file'] {
-    margin-top: 10px;
-    border: 1px solid #ddd;
-    padding: 10px;
-    background-color: #fafafa;
-    border-radius: 4px;
-    width: calc(100% - 22px);
-    box-sizing: border-box;
-}
-
-/* Optional: Stil für den Label des Bild-Uploads */
-#newEmployeeForm label[for='bild'] {
-    font-weight: bold;
-    display: block; /* Stellt sicher, dass der Label über dem Eingabefeld steht */
-    margin-top: 20px;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .image-preview {
-    margin-top: 10px;
-    width: 100%; /* oder eine bestimmte Breite, je nach Bedarf */
-    height: 100px; /* oder eine bestimmte Höhe */
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden; /* Verhindert das Überlaufen des Bildes */
-    background-color: #fafafa;
+  margin-top: 10px;
+  width: 100%;
+  height: 150px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #fafafa;
 }
 
 .image-preview img {
-    max-width: 100%;
-    max-height: 100%;
+  max-width: 100%;
+  max-height: 100%;
 }

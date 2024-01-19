@@ -141,3 +141,7 @@ p {
   align-items: center;
   margin-bottom: 10px;
 }
+
+#screenSizeInfoDiv {
+  display: none; /*Zeigt eine kleine Info zur Bildschirmauflösung an*/
+}

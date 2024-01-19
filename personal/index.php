@@ -176,7 +176,7 @@ error_reporting(E_ALL);
                 <input type='file' id='bild' name='bild' accept='image/*'><br>
                 <div id='imagePreview' class='image-preview'></div>
 
-                <input type='submit' value='Speichern'>
+                <input type='submit' value='Mitarbeiter hinzufügen'>
             </form>
         </div>
     </div>
