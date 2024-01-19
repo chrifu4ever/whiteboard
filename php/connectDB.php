@@ -14,12 +14,6 @@ class ConnectDB
     {
         $sql = new mysqli($this->server, $this->username, $this->password, $this->database);
         mysqli_set_charset($sql, "utf8");
-        if ($sql->connect_errno) {
-            echo "<script>console.error('Failed to connect to MySQL: (" . $sql->connect_errno . ") " . $sql->connect_error . "');</script>";
-        } else {
-            echo "<script>console.log('MySQL connection established successfully.');</script>";
-        }
-
         return $sql;
     }
 

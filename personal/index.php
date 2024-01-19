@@ -168,14 +168,20 @@ error_reporting(E_ALL);
                 <label for='eintrittsdatum'>Eintrittsdatum:</label>
                 <input type='date' id='eintrittsdatum' name='eintrittsdatum'><br>
 
+                <label for='abteilung'>Abteilung:</label>
+                <select id='abteilungDropdown' name='abteilung'>
+                </select><br>
+
                 <label for='bild'>Bild hochladen:</label>
                 <input type='file' id='bild' name='bild' accept='image/*'><br>
                 <div id='imagePreview' class='image-preview'></div>
+
                 <input type='submit' value='Speichern'>
             </form>
         </div>
     </div>
-    ";
+";
+
 
     
     ?>

@@ -10,78 +10,78 @@ let nextXPosition = 0; // Globale Variable für die nächste X-Position
 const padding = 10; // Abstand zwischen den Bildern
 
 // ... Code zum Laden von Bildern und PDFs ...
-document.getElementById("fileInputButton").addEventListener("change", function (e) {
-  const file = e.target.files[0];
-  const formData = new FormData();
-  formData.append("file", file);
+document
+  .getElementById("fileInputButton")
+  .addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
 
-  fetch("../php/fileUpload.php", {
+    fetch("../php/fileUpload.php", {
       method: "POST",
       body: formData,
-  })
-  .then((response) => response.json())
-  .then((data) => {
-      if (file.type.match("image.*")) {
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (file.type.match("image.*")) {
           // Verarbeite Bild-Upload
           if (data.filePath) {
-              loadAndAddImage(data.filePath);
+            loadAndAddImage(data.filePath);
           }
-      } else if (file.type === "application/pdf") {
+        } else if (file.type === "application/pdf") {
           // Verarbeite PDF-Upload
           if (Array.isArray(data.svgFiles)) {
-              data.svgFiles.forEach((svgFile) => {
-                  loadAndAddImage(svgFile);
-              });
+            data.svgFiles.forEach((svgFile) => {
+              loadAndAddImage(svgFile);
+            });
           }
-      }
-  })
-  .catch((error) => console.error("Error:", error));
-});
-
-
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  });
 
 // Bild hochladen und positionieren
 function loadAndAddImage(filePath) {
   const img = new Image();
   img.onload = function () {
-      let width = img.width;
-      let height = img.height;
-      const maxHeight = canvas.height - 200; // Maximale Höhe, etwas kleiner als die Canvas-Höhe
+    let width = img.width;
+    let height = img.height;
+    const maxHeight = canvas.height - 200; // Maximale Höhe, etwas kleiner als die Canvas-Höhe
 
-      // Skaliere das Bild, um das Seitenverhältnis zu bewahren und die Höhe zu begrenzen
-      if (height > maxHeight) {
-          width *= maxHeight / height;
-          height = maxHeight;
-      }
+    // Skaliere das Bild, um das Seitenverhältnis zu bewahren und die Höhe zu begrenzen
+    if (height > maxHeight) {
+      width *= maxHeight / height;
+      height = maxHeight;
+    }
 
-      // Berechne die X-Position für das aktuelle Bild
-      let posX = nextXPosition + padding;
+    // Berechne die X-Position für das aktuelle Bild
+    let posX = nextXPosition + padding;
 
-      // Prüfe, ob das Bild innerhalb des Canvas passt
-      if (posX + width > canvas.width) {
-          posX = padding; // Beginne eine neue Zeile
-          nextXPosition = 0; // Setze die X-Position zurück
-      }
+    // Prüfe, ob das Bild innerhalb des Canvas passt
+    if (posX + width > canvas.width) {
+      posX = padding; // Beginne eine neue Zeile
+      nextXPosition = 0; // Setze die X-Position zurück
+    }
 
-      // Füge das Bildobjekt der Objektliste hinzu
-      objects.push({
-          type: "image",
-          content: img,
-          x: posX,
-          y: 0, // Y-Position kann konstant sein, wenn Sie die Bilder in einer Reihe anordnen möchten
-          width: width,
-          height: height,
-          filepath: filePath,
-      });
+    // Füge das Bildobjekt der Objektliste hinzu
+    objects.push({
+      type: "image",
+      content: img,
+      x: posX,
+      y: 0, // Y-Position kann konstant sein, wenn Sie die Bilder in einer Reihe anordnen möchten
+      width: width,
+      height: height,
+      filepath: filePath,
+    });
 
-      // Aktualisiere die nächste X-Position für das nächste Bild
-      nextXPosition = posX + width;
+    // Aktualisiere die nächste X-Position für das nächste Bild
+    nextXPosition = posX + width;
 
-      // Zeichne alle Objekte auf dem Canvas neu
-      drawObjects();
+    // Zeichne alle Objekte auf dem Canvas neu
+    drawObjects();
   };
   img.onerror = function () {
-      console.error("Fehler beim Laden des Bildes: " + filePath);
+    console.error("Fehler beim Laden des Bildes: " + filePath);
   };
   img.src = filePath;
 }
@@ -115,7 +115,6 @@ function clearFilesDirectory() {
 
 // ... Code zum Zeichnen von Objekten ...
 function drawObjects(filepath) {
-  console.log("Gezeichnet");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   objects.forEach((obj, index) => {
     // Prüfe, ob es sich um eine SVG-Datei handelt
@@ -164,7 +163,7 @@ function drawObjects(filepath) {
       ctx.lineWidth = 2;
       ctx.strokeRect(obj.x, obj.y, obj.content.width, obj.content.height);
     }
-    
+
     updateJsonForObject(obj, index, filepath);
   });
 }
@@ -340,27 +339,25 @@ function resizeObject(mouseX, mouseY, obj, direction) {
 
 canvas.addEventListener("wheel", function (e) {
   if (currentObjectIndex !== null) {
-      const obj = objects[currentObjectIndex];
-      const originalWidth = obj.content.width;
-      const originalHeight = obj.content.height;
-      const aspectRatio = originalWidth / originalHeight;
-      const change = e.deltaY < 0 ? 20 : -20; // 10px größer oder kleiner
+    const obj = objects[currentObjectIndex];
+    const originalWidth = obj.content.width;
+    const originalHeight = obj.content.height;
+    const aspectRatio = originalWidth / originalHeight;
+    const change = e.deltaY < 0 ? 20 : -20; // 10px größer oder kleiner
 
-      // Neue Breite und Höhe berechnen, während das Seitenverhältnis beibehalten wird
-      let newWidth = Math.max(originalWidth + change, 20); // Stelle sicher, dass die Größe nicht zu klein wird
-      let newHeight = newWidth / aspectRatio;
+    // Neue Breite und Höhe berechnen, während das Seitenverhältnis beibehalten wird
+    let newWidth = Math.max(originalWidth + change, 20); // Stelle sicher, dass die Größe nicht zu klein wird
+    let newHeight = newWidth / aspectRatio;
 
-      // Aktualisiere die Größe des Bildes
-      obj.content.width = newWidth;
-      obj.content.height = newHeight;
-      obj.width = newWidth; // Aktualisiere die Breite
-      obj.height = newHeight; // Aktualisiere die Höhe
+    // Aktualisiere die Größe des Bildes
+    obj.content.width = newWidth;
+    obj.content.height = newHeight;
+    obj.width = newWidth; // Aktualisiere die Breite
+    obj.height = newHeight; // Aktualisiere die Höhe
 
-      drawObjects();
+    drawObjects();
   }
 });
-
-
 
 // Whiteboard veröffentlichen und speichern im saved-Ordner
 document
@@ -384,9 +381,6 @@ document
     }
   });
 
-
-
-
 //Einzelne Elemente löschen vom Canvas, aus der JSON und aus dem Ordner wenn keine Elemente mehr vorhanden sind
 canvas.addEventListener("contextmenu", function (e) {
   e.preventDefault();
@@ -405,7 +399,6 @@ canvas.addEventListener("contextmenu", function (e) {
 });
 
 function removeFromJson(index) {
-  console.log("Removed from JSON");
   fetch("/php/removeFromJson.php", {
     method: "POST",
     headers: {

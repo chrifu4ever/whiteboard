@@ -9,8 +9,6 @@ let currentObjectIndex = null;
 
 // ... Code zum Zeichnen von Objekten ...
 function drawObjects(filepath) {
-  console.log("Gezeichnet");
-
   const scaleX = 2;
   const scaleY = 2;
 
@@ -270,28 +268,26 @@ function loadAndAddImageFromJson(item) {
 // Funktion, um das Frontend neu zu laden
 function reloadFrontend() {
   window.location.reload();
-  console.log("Frontend neu geladen");
 }
 
 // Aktualisierung alle 10 Sekunden (10000 Millisekunden)
 setInterval(reloadFrontend, 180000);
 
-
 //Mauszeiger ausblenden nach 10Sekunden Inaktivität im Frontendlet mouseInactivityTimer = null;
 let mouseInactivityTimer = null;
 
 function hideCursor() {
-    document.body.style.cursor = 'none';
+  document.body.style.cursor = "none";
 }
 
 function resetCursorInactivityTimer() {
-    document.body.style.cursor = 'default';
-    clearTimeout(mouseInactivityTimer);
-    mouseInactivityTimer = setTimeout(hideCursor, 10000); // 10 Sekunden Inaktivität
+  document.body.style.cursor = "default";
+  clearTimeout(mouseInactivityTimer);
+  mouseInactivityTimer = setTimeout(hideCursor, 10000); // 10 Sekunden Inaktivität
 }
 
 // Event Listener für Mausbewegungen
-document.addEventListener('mousemove', resetCursorInactivityTimer);
+document.addEventListener("mousemove", resetCursorInactivityTimer);
 
 // Initialisieren des Timers beim Laden der Seite
 resetCursorInactivityTimer();

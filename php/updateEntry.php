@@ -15,9 +15,10 @@ if (isset($data['id']) && isset($data['data'])) {
     $updatedData = $data['data'];
 
     // Überprüfen, ob die Daten vorhanden sind, andernfalls NULL zuweisen
-    $updatedData['Geburtsdatum'] = !empty($updatedData['Geburtsdatum']) ? $updatedData['Geburtsdatum'] : NULL;
-    $updatedData['Eintrittsdatum'] = !empty($updatedData['Eintrittsdatum']) ? $updatedData['Eintrittsdatum'] : NULL;
-    $updatedData['Austrittsdatum'] = !empty($updatedData['Austrittsdatum']) ? $updatedData['Austrittsdatum'] : NULL;
+    $updatedData['Geburtsdatum'] = ($updatedData['Geburtsdatum'] !== "") ? $updatedData['Geburtsdatum'] : NULL;
+    $updatedData['Eintrittsdatum'] = ($updatedData['Eintrittsdatum'] !== "") ? $updatedData['Eintrittsdatum'] : NULL;
+    $updatedData['Austrittsdatum'] = ($updatedData['Austrittsdatum'] !== "") ? $updatedData['Austrittsdatum'] : NULL;
+    
 
     // SQL-Query vorbereiten
     $query = "UPDATE Personal SET 
