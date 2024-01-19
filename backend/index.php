@@ -3,6 +3,7 @@
 
 <head>
     <title>Sidler Whiteboard Backend</title>
+    <link rel="shortcut icon" href="../frontend/img/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="../css/backend.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>

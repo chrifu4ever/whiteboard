@@ -44,17 +44,16 @@ class ConnectDB
         return $entries;
     }
 
-
-    public function searchEntries($searchTerm)
-    {
+    public function searchEntries($searchTerm) {
         $conn = $this->connect();
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
-
-        $searchTerm = $conn->real_escape_string($searchTerm); // Schutz vor SQL-Injection
-        $query = "SELECT * FROM Personal WHERE Vorname LIKE '%$searchTerm%' OR Nachname LIKE '%$searchTerm%'";
-
+    
+        $searchTerm = $conn->real_escape_string($searchTerm);
+        // SQL-Abfrage, die Ergebnisse nach Nachname sortiert
+        $query = "SELECT * FROM Personal WHERE Vorname LIKE '%$searchTerm%' OR Nachname LIKE '%$searchTerm%' ORDER BY Nachname ASC";
+    
         $result = $conn->query($query);
         $entries = [];
         if ($result->num_rows > 0) {
@@ -62,10 +61,11 @@ class ConnectDB
                 $entries[] = $row;
             }
         }
-
+    
         $conn->close();
         return $entries;
     }
+    
 
 
     public function getEntryById($id)

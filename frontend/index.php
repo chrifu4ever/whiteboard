@@ -13,6 +13,7 @@ $lastDayNextMonth = date('t.m.Y', strtotime('last day of next month'));
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../frontend/img/favicon.ico" type="image/x-icon" />
     <title>Sidler Transport Whiteboard</title>
     <link rel="stylesheet" href="../css/frontend.css">
 </head>

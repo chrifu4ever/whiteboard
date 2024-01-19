@@ -178,3 +178,39 @@ document.getElementById('bild').addEventListener('change', function(event) {
         reader.readAsDataURL(this.files[0]);
     }
 });
+
+
+document.getElementById('newEmployeeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var formData = new FormData(this);
+    
+    // Zum Anzeigen der FormData-Inhalte in der Konsole
+    for (var pair of formData.entries()) {
+        console.log("FormData "+pair[0]+ ', ' + pair[1]);
+    }
+
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "../php/newEmployeeEntry.php", true);
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            Swal.fire({
+                title: 'Erfolg!',
+                text: 'Mitarbeiter wurde erfolgreich angelegt.',
+                icon: 'success'
+            }).then(() => {
+                window.location.reload();
+            });
+        } else {
+            Swal.fire({
+                title: 'Fehler!',
+                text: 'Es gab einen Fehler beim Speichern des Mitarbeiters.',
+                icon: 'error'
+            });
+        }
+    };
+
+    xhr.send(formData);
+});
