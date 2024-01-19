@@ -51,7 +51,7 @@ error_reporting(E_ALL);
                 echo "<td>" . formatGermanDate($entry['Eintrittsdatum']) . "</td>";
                 echo "<td>" . formatGermanDate($entry['Austrittsdatum']) . "</td>";
                 echo "<td class='action'><i class='fa-solid fa-pen edit-icon' data-persid='" . $entry['PersID'] . "'></i></td>";
-                echo "<td><i class='fa-solid fa-trash delete-icon'></i></td>";
+                echo "<td class='delete'><i class='fa-solid fa-trash delete-icon'></i></td>";
                 echo "</tr>";
             }
 

@@ -5,6 +5,7 @@ $(document).ready(function () {
     row
       .find("td")
       .not(".action")
+      .not(".delete")
       .each(function () {
         var text = $(this).text();
         $(this).html("<input type='text' value='" + text + "' />");
