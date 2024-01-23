@@ -297,12 +297,21 @@ function updateClock() {
   var now = new Date();
   var hours = now.getHours();
   var minutes = now.getMinutes();
-  var seconds = now.getSeconds();
   minutes = minutes < 10 ? '0' + minutes : minutes;
-  seconds = seconds < 10 ? '0' + seconds : seconds;
-  var timeString = hours + ':' + minutes + ':' + seconds;
+  var timeString = hours + ':' + minutes+' Uhr';
   document.getElementById('current-time').textContent = timeString;
 }
 
+function updateDateTime() {
+  var now = new Date();
+  // Aktualisieren des Datums
+  var dateString = now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('current-date').textContent = dateString;
+}
+
+setInterval(updateDateTime, 60000); // Aktualisiert jede Minute
+updateDateTime(); // Initialer Aufruf
+
 setInterval(updateClock, 1000);
 updateClock(); // initialer Aufruf
+updateDateTime();

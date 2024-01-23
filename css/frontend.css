@@ -86,7 +86,7 @@ p {
 }
 
 #birthday-div,
-#information_div {
+#information_div, #clock-div {
   flex: 1;
   background-color: #ffffff;
   margin: 1vh 1vw;
@@ -94,6 +94,11 @@ p {
   box-sizing: border-box;
   box-shadow: 10px 10px 20px gray;
 }
+
+#clock-div {
+  flex: 0;
+}
+
 
 .canvas_pics {
   position: absolute;
@@ -146,8 +151,9 @@ p {
   display: none; /*Zeigt eine kleine Info zur Bildschirmauflösung an*/
 }
 
-div#current-time {
+div#current-time, #current-date {
     font-weight: bold;
     text-align: center;
     font-size: 35px;
 }
+

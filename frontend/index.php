@@ -2,10 +2,13 @@
 require_once('../php/connectDB.php');
 $db = new ConnectDB();
 $todaysBirthdays = $db->getTodaysBirthdays();
+$nextBirthdays = $db->getNextBirthdays();
 $leavingPerson = $db->getLeavingPerson();
 $joiningPerson = $db->getJoiningPerson();
 $firstDayNextMonth = date('01.m.Y', strtotime('first day of next month'));
-$lastDayNextMonth = date('t.m.Y', strtotime('last day of next month'));
+$lastDayNextMonth = date('t.m.Y', strtotime('last day of this month'));
+$todaysBirthdayCount = $db->countTodaysBirthdays();
+
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -26,6 +29,10 @@ $lastDayNextMonth = date('t.m.Y', strtotime('last day of next month'));
         </div>
         <div id="right-div">
             <img class="logo" src="img/sidler_transporte-Logo_ohne Rahmen.png">
+            <div id="clock-div">
+                <div id="current-date">Datum wird geladen...</div>
+                <div id="current-time">Uhrzeit wird geladen...</div>
+            </div>
             <div id="birthday-div">
                 <h2>Geburtstage</h2>
                 <?php if (count($todaysBirthdays) > 0): ?>
@@ -51,6 +58,40 @@ $lastDayNextMonth = date('t.m.Y', strtotime('last day of next month'));
                 <?php else: ?>
                     <p>Heute hat niemand Geburtstag.</p>
                 <?php endif; ?>
+                <?php if ($todaysBirthdayCount <= 2): ?>
+                    <div id="upcoming-birthdays">
+                        <h3>Demnächst hat Geburtstag</h3>
+                        <?php if (count($nextBirthdays) > 0): ?>
+
+                            <div class="person_flex">
+                                <?php foreach ($nextBirthdays as $person): ?>
+                                    <div class="person">
+                                        <img class="personal_pic"
+                                            src="../personal/personalbilder/<?php echo htmlspecialchars($person['Foto']); ?>">
+                                        <div class="personal_info">
+                                            <p class="personal_name">
+                                                <b>
+                                                    <?php echo htmlspecialchars($person['Vorname']); ?>
+                                                    <?php echo htmlspecialchars($person['Nachname']); ?><br>
+                                                </b>
+                                                <?php
+                                                // Konvertieren Sie das Geburtsdatum in das Format Tag.Monat
+                                                $gebDatum = new DateTime($person['Geburtsdatum']);
+                                                echo 'am ' . $gebDatum->format('d.m');
+                                                ?>
+                                                <br>
+                                                <?php echo htmlspecialchars($person['Abteilung']); ?>
+                                            </p>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <p>Keine kommenden Geburtstage.</p>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+
             </div>
             <div id="information_div">
                 <h2>Ein- & Austritte</h2>
@@ -107,9 +148,10 @@ $lastDayNextMonth = date('t.m.Y', strtotime('last day of next month'));
                     <p>Wir danken herzlich für die Zusammenarbeit und wünschen für die Zukunft alles Gute.</p>
                 <?php else: ?>
                     <p>Keine Austritte</p>
-                    <div id="current-time">Uhrzeit wird geladen...</div>
+
 
                 <?php endif; ?>
+
             </div>
         </div>
     </div>

@@ -3,17 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        button {
-            font-size: 20px;
-            padding: 10px 20px;
-        }
-    </style>
+    <title>Sidler Whiteboard</title>
+    <link rel="stylesheet" href="/css/start.css">
 </head>
 <body>
+    <img src="/frontend/img/Sidler_Logo.png" alt="Sidler Logo" class="logo">
     <h1>Sidler Whiteboard</h1>
-    <button onclick="window.location.href='/frontend/index.php'">Sidler Whiteboard anzeigen</button>
-    <button onclick="window.location.href='/backend/index.php'">Sidler Whiteboard bearbeiten</button>
+    <div class="container">
+        <div class="tile" onclick="window.location.href='/frontend/index.php'">
+            <h2>Sidler Whiteboard anzeigen</h2>
+        </div>
+        <div class="tile" onclick="window.location.href='/backend/index.php'">
+            <h2>Sidler Whiteboard bearbeiten</h2>
+        </div>
+        <div class="tile" onclick="window.location.href='/personal/index.php'">
+            <h2>Sidler Whiteboard Personalanzeige bearbeiten</h2>
+        </div>
+    </div>
 </body>
 </html>
