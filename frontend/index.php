@@ -1,14 +1,19 @@
 <?php
 require_once('../php/connectDB.php');
 $db = new ConnectDB();
-$todaysBirthdays = $db->getTodaysBirthdays();
-$nextBirthdays = $db->getNextBirthdays();
+
+
 $leavingPerson = $db->getLeavingPerson();
 $joiningPerson = $db->getJoiningPerson();
 $firstDayNextMonth = date('01.m.Y', strtotime('first day of next month'));
 $lastDayNextMonth = date('t.m.Y', strtotime('last day of this month'));
-$todaysBirthdayCount = $db->countTodaysBirthdays();
 
+
+require_once('../php/birthday.php');
+$birthdayHandler = new Birthday();
+$todaysBirthdays = $birthdayHandler->getTodaysBirthdays();
+$nextBirthdays = $birthdayHandler->getNextBirthdays();
+$todaysBirthdayCount = $birthdayHandler->countTodaysBirthdays();
 ?>
 <!DOCTYPE html>
 <html lang="de">
