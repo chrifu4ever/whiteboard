@@ -2,8 +2,7 @@
 <html>
 
 <head>
-    <title>Sidler Whiteboard Backend</title>
-    <link rel="shortcut icon" href="../frontend/img/favicon.ico" type="image/x-icon" />
+    <title>Sidler Whiteboard backend</title>
     <link rel="stylesheet" href="../css/backend.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
@@ -12,7 +11,7 @@
 
     <div id="menu-container">
         <input type="file" id="fileInputButton" accept="image/*,application/pdf">
-        <button id="clearCanvasButton">Alle Elemente entfernen</button>
+        <button id="clearCanvasButton">Clear Canvas</button>
         <!--  <button id="saveButton">Canvas Speichern</button> -->
         <button id="goLiveWhiteboardButton">Whiteboard veröffentlichen</button>
 
@@ -22,7 +21,7 @@
     <p id="warning_message"></p>
     </div>
 
-    <p><a href="../frontend/index.php" target="_blank">Aktuelles Whiteboard ansehen</a></p>
+
     <script src="../js/backend.js"></script>
 </body>
 
