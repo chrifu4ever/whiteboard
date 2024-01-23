@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 class ConnectDB
 {
 
-    private $server = "172.21.0.4";
+    private $server = "sidler_whiteboard-mysql-1";
     private $username = "root";
     private $password = "einSehrGutesPasswort123";
     private $database = "sidler_db";

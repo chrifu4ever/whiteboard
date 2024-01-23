@@ -145,3 +145,9 @@ p {
 #screenSizeInfoDiv {
   display: none; /*Zeigt eine kleine Info zur Bildschirmauflösung an*/
 }
+
+div#current-time {
+    font-weight: bold;
+    text-align: center;
+    font-size: 35px;
+}

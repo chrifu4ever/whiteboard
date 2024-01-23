@@ -1,6 +1,16 @@
+@font-face {
+    font-family: "Montserrat Regular";
+    src: url("../frontend/fonts/Montserrat-Regular.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "Montserrat Bold";
+    src: url("../frontend/fonts/Montserrat-Bold.ttf") format("truetype");
+  }
+
 /* login.css */
 body {
-    font-family: Arial, sans-serif;
+    font-family: Montserrat Regular, sans-serif;
     background-color: #f4f4f4;
     display: flex;
     justify-content: center;

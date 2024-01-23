@@ -107,6 +107,8 @@ $lastDayNextMonth = date('t.m.Y', strtotime('last day of next month'));
                     <p>Wir danken herzlich für die Zusammenarbeit und wünschen für die Zukunft alles Gute.</p>
                 <?php else: ?>
                     <p>Keine Austritte</p>
+                    <div id="current-time">Uhrzeit wird geladen...</div>
+
                 <?php endif; ?>
             </div>
         </div>
