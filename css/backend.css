@@ -31,7 +31,7 @@ body {
 
 button {
   padding: 10px 15px;
-  background-color: #007bff;
+  background-color: #007fcd;
   color: white;
   border: none;
   border-radius: 5px;
@@ -45,6 +45,11 @@ button:hover {
   background-color: #0056b3;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
+
+#clearCanvasButton {
+  background-color: #cc4028;
+}
+
 
 input[type="file"] {
   padding: 10px;

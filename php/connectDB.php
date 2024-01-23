@@ -38,6 +38,9 @@ class ConnectDB
         return $entries;
     }
 
+
+
+    //Auslagern in personal.php
     public function searchEntries($searchTerm) {
         $conn = $this->connect();
         if ($conn->connect_error) {
@@ -60,7 +63,7 @@ class ConnectDB
         return $entries;
     }
     
-
+/* 
 
     public function getEntryById($id)
     {
@@ -85,13 +88,13 @@ class ConnectDB
 
 
 
-
+ */
 
    
     
 
     
-
+    //Auslagern in joinAndLeaveEmployee.php
     public function getLeavingPerson()
     {
         $conn = $this->connect();

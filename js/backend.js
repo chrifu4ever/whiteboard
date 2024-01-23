@@ -388,6 +388,11 @@ document.getElementById("goLiveWhiteboardButton").addEventListener("click", func
           .then((data) => console.log(data.message))
           .catch((error) => console.error("Error:", error));
       }
+      Swal.fire({
+        title: "Whiteboard veröffentlich",
+        text: "Das Whiteboard wurde erfolgreich veröffentlicht",
+        icon: "success",
+      });
     });
   } else {
     Swal.fire({
