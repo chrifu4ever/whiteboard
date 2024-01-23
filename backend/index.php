@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html>
-
+<?php
+session_start();
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header('Location: login.php');
+    exit;
+}
+?>
 <head>
     <title>Sidler Whiteboard Backend</title>
     <link rel="stylesheet" href="../css/backend.css">

@@ -1,6 +1,9 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+session_start();
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header('Location: login.php');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
