@@ -17,6 +17,7 @@ $lastDayNextMonth = date('t.m.Y', strtotime('last day of next month'));
     <title>Sidler Transport Whiteboard</title>
     <link rel="stylesheet" href="../css/frontend.css">
 </head>
+
 <body>
     <div id="main-div">
         <div id="canvas-container">
@@ -36,11 +37,12 @@ $lastDayNextMonth = date('t.m.Y', strtotime('last day of next month'));
                                     src="../personal/personalbilder/<?php echo htmlspecialchars($person['Foto']); ?>">
                                 <div class="personal_info">
                                     <p class="personal_name">
-                                        <?php echo htmlspecialchars($person['Vorname']); ?>
-                                        <?php echo htmlspecialchars($person['Nachname']); ?><br>
                                         <b>
-                                            <?php echo htmlspecialchars($person['Abteilung']); ?>
+                                            <?php echo htmlspecialchars($person['Vorname']); ?>
+                                            <?php echo htmlspecialchars($person['Nachname']); ?><br>
                                         </b>
+                                        <?php echo htmlspecialchars($person['Abteilung']); ?>
+
                                     </p>
                                 </div>
                             </div>
@@ -64,11 +66,13 @@ $lastDayNextMonth = date('t.m.Y', strtotime('last day of next month'));
                                     src="../personal/personalbilder/<?php echo htmlspecialchars($person['Foto']); ?>">
                                 <div class="personal_info">
                                     <p class="personal_name">
-                                        <?php echo htmlspecialchars($person['Vorname']); ?>
-                                        <?php echo htmlspecialchars($person['Nachname']); ?><br>
+
                                         <b>
-                                            <?php echo htmlspecialchars($person['Abteilung']); ?>
+                                            <?php echo htmlspecialchars($person['Vorname']); ?>
+                                            <?php echo htmlspecialchars($person['Nachname']); ?><br>
                                         </b>
+                                        <?php echo htmlspecialchars($person['Abteilung']); ?>
+
                                     </p>
                                 </div>
                             </div>
@@ -89,11 +93,12 @@ $lastDayNextMonth = date('t.m.Y', strtotime('last day of next month'));
                                     src="../personal/personalbilder/<?php echo htmlspecialchars($person['Foto']); ?>">
                                 <div class="personal_info">
                                     <p class="personal_name">
-                                        <?php echo htmlspecialchars($person['Vorname']); ?>
-                                        <?php echo htmlspecialchars($person['Nachname']); ?><br>
                                         <b>
-                                            <?php echo htmlspecialchars($person['Abteilung']); ?>
+                                            <?php echo htmlspecialchars($person['Vorname']); ?>
+                                            <?php echo htmlspecialchars($person['Nachname']); ?><br>
                                         </b>
+                                        <?php echo htmlspecialchars($person['Abteilung']); ?>
+
                                     </p>
                                 </div>
                             </div>

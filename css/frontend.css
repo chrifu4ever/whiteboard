@@ -12,14 +12,14 @@ h1,
 h2 {
   font-family: "Montserrat Bold", sans-serif;
   text-align: center;
-  text-decoration: underline;
+
   font-size: 3em;
   margin: 0 0 20px 0;
 }
 
 h3 {
   font-size: 1.2em;
-  text-decoration: underline;
+ 
 }
 
 html,

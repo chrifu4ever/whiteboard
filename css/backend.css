@@ -1,17 +1,22 @@
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f4f4f4;
+
   margin: 0;
   padding: 0;
   color: #333;
 }
 
 #menu-container {
-  text-align: center;
   padding: 15px;
   background-color: #ffffff;
-  border-bottom: 2px solid #d8d8d8;
-  box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-around;
+  width: 1615px;
+  margin: 0 auto;
+}
+
+#sidler_logo {
+  max-height: 60px;
 }
 
 button {
@@ -23,6 +28,7 @@ button {
   cursor: pointer;
   margin: 5px;
   transition: background-color 0.3s, box-shadow 0.3s;
+  font-size: 20px;
 }
 
 button:hover {
@@ -35,6 +41,7 @@ input[type="file"] {
   margin-top: 10px;
   border-radius: 5px;
   border: 1px solid #ddd;
+  font-size: 20px;
 }
 
 #canvas-container {
@@ -63,4 +70,9 @@ input[type="file"] {
   #canvas-container {
     padding: 10px;
   }
+}
+
+.description {
+  width: 1643px;
+  margin: 0 auto;
 }

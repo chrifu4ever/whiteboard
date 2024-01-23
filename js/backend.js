@@ -89,15 +89,27 @@ function loadAndAddImage(filePath) {
 document
   .getElementById("clearCanvasButton")
   .addEventListener("click", function () {
-    const userConfirmation = confirm(
-      "Möchtest du wirklich alle Elemente vom Canvas löschen?"
-    );
-
-    if (userConfirmation) {
-      clearCanvas();
-      clearFilesDirectory();
-    }
+    Swal.fire({
+      title: "Canvas löschen?",
+      text: "Möchtest du wirklich alle Elemente von der Arbeitsfläche löschen?\n\Dies hat keine Auswirkung auf das veröffentlichte Whiteboard",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Ja, löschen",
+      cancelButtonText: "Abbrechen",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        clearCanvas();
+        clearFilesDirectory();
+        Swal.fire({
+          title: "Erfolg!",
+          text: "Alle Elemente wurden vom Canvas gelöscht.",
+          icon: "success",
+        });
+      }
+    });
   });
+
+
 
 function clearCanvas() {
   // Lösche alle Objekte auf dem Canvas
@@ -360,26 +372,33 @@ canvas.addEventListener("wheel", function (e) {
 });
 
 // Whiteboard veröffentlichen und speichern im saved-Ordner
-document
-  .getElementById("goLiveWhiteboardButton")
-  .addEventListener("click", function () {
-    if (objects.length > 0) {
-      const userConfirmation = confirm(
-        "Möchtest du das aktuelle Whiteboard veröffentlichen? Dadurch wird das bisherige Whiteboard überschrieben und dieses angezeigt."
-      );
-
-      if (userConfirmation) {
+document.getElementById("goLiveWhiteboardButton").addEventListener("click", function () {
+  if (objects.length > 0) {
+    Swal.fire({
+      title: "Whiteboard veröffentlichen?",
+      text: "Möchtest du das aktuelle Whiteboard veröffentlichen? Dadurch wird das bisherige Whiteboard überschrieben und dieses angezeigt.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Ja, veröffentlichen",
+      cancelButtonText: "Abbrechen",
+    }).then((result) => {
+      if (result.isConfirmed) {
         fetch("/php/copyFiles.php", { method: "POST" })
           .then((response) => response.json())
           .then((data) => console.log(data.message))
           .catch((error) => console.error("Error:", error));
       }
-    } else {
-      alert(
-        "Es gibt keine Objekte auf dem Whiteboard, die veröffentlicht werden können."
-      );
-    }
-  });
+    });
+  } else {
+    Swal.fire({
+      title: "Keine Objekte",
+      text: "Es gibt keine Objekte auf dem Whiteboard, die veröffentlicht werden können.",
+      icon: "info",
+    });
+  }
+});
+
+
 
 //Einzelne Elemente löschen vom Canvas, aus der JSON und aus dem Ordner wenn keine Elemente mehr vorhanden sind
 canvas.addEventListener("contextmenu", function (e) {
