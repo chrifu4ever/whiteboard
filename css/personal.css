@@ -113,7 +113,9 @@ tr:nth-child(even) {
 }
 
 
-
+.persBilderThumb {
+  max-width: 75px;
+}
 
 /* Modal-Stil Neuer Mitarbeiter */
 .modal {

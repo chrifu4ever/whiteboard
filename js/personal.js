@@ -6,6 +6,7 @@ $(document).ready(function () {
       .find("td")
       .not(".action")
       .not(".delete")
+      .not(".foto")
       .each(function () {
         var text = $(this).text();
         $(this).html("<input type='text' value='" + text + "' />");
@@ -32,12 +33,12 @@ function updateEntry(row) {
   var persId = row.find(".update-icon").data("persid");
 
   var updatedData = {
-    Vorname: row.find("td:eq(1) input").val(),
-    Nachname: row.find("td:eq(2) input").val(),
-    Abteilung: row.find("td:eq(3) input").val(),
-    Geburtsdatum: convertDateFormat(row.find("td:eq(4) input").val()),
-    Eintrittsdatum: convertDateFormat(row.find("td:eq(5) input").val()),
-    Austrittsdatum: convertDateFormat(row.find("td:eq(6) input").val()),
+    Vorname: row.find("td:eq(2) input").val(),
+    Nachname: row.find("td:eq(3) input").val(),
+    Abteilung: row.find("td:eq(4) input").val(),
+    Geburtsdatum: convertDateFormat(row.find("td:eq(5) input").val()),
+    Eintrittsdatum: convertDateFormat(row.find("td:eq(6) input").val()),
+    Austrittsdatum: convertDateFormat(row.find("td:eq(7) input").val()),
   };
   // Datum Validierung
   if (

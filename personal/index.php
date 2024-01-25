@@ -42,11 +42,12 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         // Anzeigen der Ergebnisse, falls vorhanden
         if ($entries) {
             echo "<table border='1'>";
-            echo "<tr><th class='hidden'>PersID</th><th>Vorname</th><th>Nachname</th><th>Abteilung</th><th>Geburtsdatum</th><th>Eintrittsdatum</th><th>Austrittsdatum</th><th>Bearbeiten</th><th>Löschen</th></tr>";
+            echo "<tr><th class='hidden'>PersID</th><th>Foto</th></th><th>Vorname</th><th>Nachname</th><th>Abteilung</th><th>Geburtsdatum</th><th>Eintrittsdatum</th><th>Austrittsdatum</th><th>Bearbeiten</th><th>Löschen</th></tr>";
 
             foreach ($entries as $entry) {
                 echo "<tr>";
                 echo "<td class='hidden'>" . htmlspecialchars($entry['PersID']) . "</td>";
+                echo "<td class='foto'><img src='personalbilder/" . htmlspecialchars($entry['Foto']) . "' class='persBilderThumb'></td>";
                 echo "<td>" . htmlspecialchars($entry['Vorname']) . "</td>";
                 echo "<td>" . htmlspecialchars($entry['Nachname']) . "</td>";
                 echo "<td>" . htmlspecialchars($entry['Abteilung']) . "</td>";
